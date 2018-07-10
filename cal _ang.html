@@ -1,0 +1,84 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<title>勤務表</title>
+<style>
+.schedule {
+	border-collapse: collapse;
+	margin:0;
+	padding:0;
+	-khtml-user-drag: element;
+}
+.schedule th{
+	background: rgb(102, 204, 145);
+}
+.schedule th,
+.schedule td {
+	border:1px solid #000;
+	border-collapse: collapse;
+	}
+
+</style>
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.13/angular.min.js"></script>
+<script>
+
+var WorkHrApp = angular.module('WorkHrApp', []);
+
+WorkHrApp.controller('WorkHrCtrl', ['$scope', function ($scope) {
+    $scope.day_works = [];
+    
+    $scope.load = function(){
+        var weekjp = new Array("日","月","火","水","木","金","土");
+        var today = new Date();
+        var thisYear = today.getFullYear();
+        var thisMonth = today.getMonth();
+        $scope.tuki = thisYear + "年" +(thisMonth+1) + "月";
+        //月末を取得
+        var lastday = new Date(thisYear, thisMonth+1, 0);
+        lastday = lastday.getDate();
+        var wak = "";
+        for (var dayCnt=1 ; dayCnt <= lastday ; dayCnt++){
+            var xday = new Date(thisYear, thisMonth, dayCnt);
+            // 曜日取得(0~6)
+            var xdays = xday.getDay();
+            $scope.day_works.push({day: dayCnt, dayofweek: weekjp[xdays], workHr: "", note: ""});
+        }
+    };
+    // 実行
+    $scope.load();
+
+}]);
+</script>
+</head>
+
+<body ng-app="WorkHrApp">
+
+<div ng-controller="WorkHrCtrl">
+    <h2>{{tuki}} 勤務表 </h2>
+    <table id="listbox" class="schedule">
+    <tr>
+    <th width="40px">日付</th>
+    <th width="40px">曜日</th>
+    <th>始業時間</th>
+    <th>終業時間</th>
+    <th>休憩時間</th>
+    <th>労働時間</th>
+    <th>備考</th>
+    </tr>
+    <tr ng-repeat="day_work in day_works">
+        <th>{{day_work.day}}</th>
+        <th>{{day_work.dayofweek}}</th>
+        <td><input type="text" style="width:70px" maxlength="5" value="{{day_work.workHr}}"></td>
+        <td><input type="text" style="width:70px" maxlength="5" value="{{day_work.workHr}}"></td>
+        <td><input type="text" style="width:70px" maxlength="5" value="{{day_work.workHr}}"></td>
+        <td><input type="text" style="width:70px" maxlength="5" value="{{day_work.workHr}}"></td>
+        <td><input type="text" style="width:200px" maxlength="20" value="{{day_work.note}}"></td>
+    </tr>
+    </table>
+</div>
+
+</body>
+</html>
