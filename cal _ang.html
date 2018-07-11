@@ -5,17 +5,17 @@
 <meta name="robots" content="noindex,nofollow">
 <title>勤務表</title>
 <style>
-.schedule {
+.WorkHrTb {
 	border-collapse: collapse;
 	margin:0;
 	padding:0;
 	-khtml-user-drag: element;
 }
-.schedule th{
+.WorkHrTb th{
 	background: rgb(102, 204, 145);
 }
-.schedule th,
-.schedule td {
+.WorkHrTb th,
+.WorkHrTb td {
 	border:1px solid #000;
 	border-collapse: collapse;
 	}
@@ -28,13 +28,14 @@
 var WorkHrApp = angular.module('WorkHrApp', []);
 
 WorkHrApp.controller('WorkHrCtrl', ['$scope', function ($scope) {
+
+    var today = new Date();
+    var thisYear = today.getFullYear();
+    var thisMonth = today.getMonth();
     $scope.day_works = [];
     
     $scope.load = function(){
         var weekjp = new Array("日","月","火","水","木","金","土");
-        var today = new Date();
-        var thisYear = today.getFullYear();
-        var thisMonth = today.getMonth();
         $scope.tuki = thisYear + "年" +(thisMonth+1) + "月";
         //月末を取得
         var lastday = new Date(thisYear, thisMonth+1, 0);
@@ -44,11 +45,27 @@ WorkHrApp.controller('WorkHrCtrl', ['$scope', function ($scope) {
             var xday = new Date(thisYear, thisMonth, dayCnt);
             // 曜日取得(0~6)
             var xdays = xday.getDay();
-            $scope.day_works.push({day: dayCnt, dayofweek: weekjp[xdays], workHr: "", note: ""});
+            $scope.day_works.push({
+                day         : dayCnt,           // 日付
+                dayofweek   : weekjp[xdays],    // 曜日
+                timSt       : "",               // 始業時間
+                timEn       : "",               // 終業時間
+                timBk       : "",               // 休憩時間
+                note        : ""                // 備考
+                });
         }
     };
-    // 実行
+    // 今月の表示
     $scope.load();
+
+    // 月移動
+    $scope.shiftMonth = function(shift){
+        today = new Date(thisYear, thisMonth + shift, 1);
+        thisYear = today.getFullYear();
+        thisMonth = today.getMonth();
+        $scope.day_works = [];
+        $scope.load();
+    };
 
 }]);
 </script>
@@ -57,8 +74,10 @@ WorkHrApp.controller('WorkHrCtrl', ['$scope', function ($scope) {
 <body ng-app="WorkHrApp">
 
 <div ng-controller="WorkHrCtrl">
+    <button ng-click="shiftMonth(-1)">last month</button>
+    <button ng-click="shiftMonth(1)">next month</button>
     <h2>{{tuki}} 勤務表 </h2>
-    <table id="listbox" class="schedule">
+    <table class="WorkHrTb">
     <tr>
     <th width="40px">日付</th>
     <th width="40px">曜日</th>
@@ -71,10 +90,12 @@ WorkHrApp.controller('WorkHrCtrl', ['$scope', function ($scope) {
     <tr ng-repeat="day_work in day_works">
         <th>{{day_work.day}}</th>
         <th>{{day_work.dayofweek}}</th>
-        <td><input type="text" style="width:70px" maxlength="5" value="{{day_work.workHr}}"></td>
-        <td><input type="text" style="width:70px" maxlength="5" value="{{day_work.workHr}}"></td>
-        <td><input type="text" style="width:70px" maxlength="5" value="{{day_work.workHr}}"></td>
-        <td><input type="text" style="width:70px" maxlength="5" value="{{day_work.workHr}}"></td>
+        <td><input type="time" style="width:70px" maxlength="5" step="1800" value="{{day_work.timSt}}"></td>
+        <td><input type="time" style="width:70px" maxlength="5" step="1800" value="{{day_work.timEn}}"></td>
+        <td><input type="time" style="width:70px" maxlength="5" step="1800" value="{{day_work.timBk}}"></td>
+        <td><input type="time" style="width:70px" maxlength="5" step="1800" 
+            value="{{day_work.timWk}}">
+        </td>
         <td><input type="text" style="width:200px" maxlength="20" value="{{day_work.note}}"></td>
     </tr>
     </table>
