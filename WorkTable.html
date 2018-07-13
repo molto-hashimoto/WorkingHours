@@ -27,20 +27,59 @@
         <button class="btn_shiftMonth" ng-click="shiftMonth(1)"> 次月 > </button>
         <h2>{{tuki}} 勤務表 </h2>
         <table class="WorkTblTb">
+
+        <!-- 選択用時刻リスト -->
+        <datalist id="WorkStTimeList">
+            <option value="08:00"></option>
+            <option value="08:30"></option>
+            <option value="09:00"></option>
+            <option value="09:30"></option>
+            <option value="10:00"></option>
+            <option value="10:30"></option>
+            <option value="11:00"></option>
+            <option value="11:30"></option>
+            <option value="12:00"></option>
+        </datalist>
+        <datalist id="WorkEnTimeList">
+            <option value="16:00"></option>
+            <option value="16:30"></option>
+            <option value="17:00"></option>
+            <option value="17:30"></option>
+            <option value="18:00"></option>
+            <option value="18:30"></option>
+            <option value="19:00"></option>
+            <option value="19:20"></option>
+            <option value="20:00"></option>
+            <option value="20:30"></option>
+            <option value="21:00"></option>
+            <option value="21:30"></option>
+            <option value="22:00"></option>
+            <option value="22:30"></option>
+            <option value="23:00"></option>
+            <option value="23:30"></option>
+        </datalist>
+        <datalist id="WorkBkTimeList">
+            <option value="00:30"></option>
+            <option value="01:00"></option>
+            <option value="01:30"></option>
+            <option value="02:00"></option>
+            <option value="02:30"></option>
+            <option value="03:00"></option>
+        </datalist>
         <!-- 初期値設定用 -->
         <tr>
             <td style="border-style: none;"></td>
             <td style="border-style: none;"></td>
-            <td style="border-style: none;"><input type="time" style="width:70px" step="1800"></td>
-            <td style="border-style: none;"><input type="time" style="width:70px" step="1800"></td>
-            <td style="border-style: none;"><input type="time" style="width:70px" step="1800"></td>
+            <td style="border-style: none;"><input type="time" style="width:85px" step="1800" list="WorkStTimeList" ng-model="def_timSt"></td>
+            <td style="border-style: none;"><input type="time" style="width:85px" step="1800" list="WorkEnTimeList" ng-model="def_timEn"></td>
+            <td style="border-style: none;"><input type="time" style="width:85px" step="1800" list="WorkBkTimeList" ng-model="def_timBk"></td>
         </tr>
         <tr>
             <td style="border-style: none;"></td>
             <td style="border-style: none;"></td>
-            <td style="border-style: none;" align="center"><input type="button" value=" 挿入 "></td>
-            <td style="border-style: none;" align="center"><input type="button" value=" 挿入 "></td>
-            <td style="border-style: none;" align="center"><input type="button" value=" 挿入 "></td>
+            <td style="border-style: none;" align="center"><input type="button" ng-click="setDefTim(OBJ_MEMBER_TIM_ST, def_timSt)" value=" ▼ "></td>
+            <td style="border-style: none;" align="center"><input type="button" ng-click="setDefTim(OBJ_MEMBER_TIM_EN, def_timEn)" value=" ▼ "></td>
+            <td style="border-style: none;" align="center"><input type="button" ng-click="setDefTim(OBJ_MEMBER_TIM_BK, def_timBk)" value=" ▼ "></td>
         </tr>
 
         <!-- ヘッダ -->
@@ -57,11 +96,11 @@
         <tr ng-repeat="day_work in day_works">
             <th>{{day_work.day}}</th>
             <th>{{day_work.dayofweek}}</th>
-            <td><input type="time" style="width:70px" step="1800" value="{{day_work.timSt}}"></td>
-            <td><input type="time" style="width:70px" step="1800" value="{{day_work.timEn}}"></td>
-            <td><input type="time" style="width:70px" step="1800" value="{{day_work.timBk}}"></td>
+            <td><input type="time" style="width:85px" step="1800" list="WorkStTimeList" value="{{day_work.timSt}}" required></td>
+            <td><input type="time" style="width:85px" step="1800" list="WorkEnTimeList" value="{{day_work.timEn}}" required></td>
+            <td><input type="time" style="width:85px" step="1800" list="WorkBkTimeList" value="{{day_work.timBk}}" required></td>
             <td><input type="time" style="width:70px" step="1800" 
-                value="{{day_work.timWk}}">
+                value="{{day_work.timWk}}" readonly>
             </td>
             <td><input type="text" style="width:200px" maxlength="20" value="{{day_work.note}}"></td>
         </tr>
