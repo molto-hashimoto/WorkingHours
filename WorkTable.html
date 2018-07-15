@@ -70,9 +70,9 @@
         <tr>
             <td style="border-style: none;"></td>
             <td style="border-style: none;"></td>
-            <td style="border-style: none;"><input type="time" style="width:85px" step="1800" list="WorkStTimeList" ng-model="def_timSt"></td>
-            <td style="border-style: none;"><input type="time" style="width:85px" step="1800" list="WorkEnTimeList" ng-model="def_timEn"></td>
-            <td style="border-style: none;"><input type="time" style="width:85px" step="1800" list="WorkBkTimeList" ng-model="def_timBk"></td>
+            <td style="border-style: none;"><input type="time" style="width:85px" step="1800" list="WorkStTimeList" value={{def_timSt}} ng-model="def_timSt"></td>
+            <td style="border-style: none;"><input type="time" style="width:85px" step="1800" list="WorkEnTimeList" value={{def_timEn}} ng-model="def_timEn"></td>
+            <td style="border-style: none;"><input type="time" style="width:85px" step="1800" list="WorkBkTimeList" value={{def_timBk}} ng-model="def_timBk"></td>
         </tr>
         <tr>
             <td style="border-style: none;"></td>
@@ -93,14 +93,21 @@
             <th>備考</th>
         </tr>
         <!-- データ -->
-        <tr ng-repeat="day_work in day_works">
+        <tr ng-repeat="(index, day_work) in day_works">
             <th>{{day_work.day}}</th>
             <th>{{day_work.dayofweek}}</th>
-            <td><input type="time" style="width:85px" step="1800" list="WorkStTimeList" value="{{day_work.timSt}}" required></td>
-            <td><input type="time" style="width:85px" step="1800" list="WorkEnTimeList" value="{{day_work.timEn}}" required></td>
-            <td><input type="time" style="width:85px" step="1800" list="WorkBkTimeList" value="{{day_work.timBk}}" required></td>
-            <td><input type="time" style="width:70px" step="1800" 
-                value="{{day_work.timWk}}" readonly>
+            <!-- 始業時間 -->
+            <td><input type="time" style="width:85px" step="1800" list="WorkStTimeList" required
+                value="{{day_works[index].timSt}}" ng-model="day_works[index].timSt" ng-change="calcWkTim(index)"></td>
+            <!-- 終業時間 -->
+            <td><input type="time" style="width:85px" step="1800" list="WorkEnTimeList" required
+                value="{{day_works[index].timEn}}" ng-model="day_works[index].timEn" ng-change="calcWkTim(index)"></td>
+            <!-- 休憩時間 -->
+            <td><input type="time" style="width:85px" step="1800" list="WorkBkTimeList" required
+                value="{{day_works[index].timBk}}" ng-model="day_works[index].timBk" ng-change="calcWkTim(index)"></td>
+            <!-- 労働時間 -->
+            <td><input type="text" style="width:85px" 
+                value="{{day_works[index].timWk}}" readonly>
             </td>
             <td><input type="text" style="width:200px" maxlength="20" value="{{day_work.note}}"></td>
         </tr>
