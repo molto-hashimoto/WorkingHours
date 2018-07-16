@@ -3,6 +3,11 @@ var WorkTblApp = angular.module('WorkTblApp', []);
 
 WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
 
+    // ユーザ名、所属
+    $scope.staff_name = "name";
+    $scope.staff_post = "post";
+
+    // パラメータ用定義値
     $scope.OBJ_MEMBER_TIM_ST = 2;
     $scope.OBJ_MEMBER_TIM_EN = 3;
     $scope.OBJ_MEMBER_TIM_BK = 4;
@@ -10,27 +15,44 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
     var today = new Date();
     var thisYear = today.getFullYear();
     var thisMonth = today.getMonth();
+
+    // 各時間初期値
+    $scope.def_timSt = new Date(thisYear, thisMonth);
+    $scope.def_timEn = new Date(thisYear, thisMonth);
+    $scope.def_timBk = new Date(thisYear, thisMonth);
+
+    // 労働時間リスト
     $scope.day_works = [];
+    $scope.sumWiTim = 0;
+
+    // 労働合計時間計算
+    $scope.calcSumWkTim = function(){
+        $scope.sumWiTim = 0;
+        for(obj of $scope.day_works) {
+            $scope.sumWiTim += obj.timWk;
+        }
+    };
 
     // 労働時間計算
     $scope.calcWkTim = function(index){
         var obj = $scope.day_works[index];
         // (終業時間-始業時間) (分)
-        var wkTim = (obj.timEn.getTime() - obj.timSt.getTime()) / (1000*60);
+        var workingTime = (obj.timEn.getTime() - obj.timSt.getTime()) / (1000*60);
         // 休憩時間 (分)
-        var bkTimMin = (obj.timBk.getHours() * 60) + obj.timBk.getMinutes();
-        wkTim -= bkTimMin;
-        wkTim /= 60;
-        obj.timWk = wkTim;
+        var breakTime = (obj.timBk.getHours() * 60) + obj.timBk.getMinutes();
+        workingTime -= breakTime;
+        workingTime /= 60;
+        obj.timWk = workingTime;
+
+        // 合計時間計算
+        $scope.calcSumWkTim();
     };
 
+    // 労働時間リスト生成
     $scope.load = function(){
         var weekjp = new Array("日","月","火","水","木","金","土");
         $scope.tuki = thisYear + "年" +(thisMonth+1) + "月";
-        $scope.def_timSt = new Date(thisYear, thisMonth);  // 始業時間初期値
-        $scope.def_timEn = new Date(thisYear, thisMonth);  // 終業時間初期値
-        $scope.def_timBk = new Date(thisYear, thisMonth);  // 休憩時間初期値
-
+        
         //月末を取得 (次月の0日)
         var lastday = new Date(thisYear, thisMonth+1, 0);
         lastday = lastday.getDate();

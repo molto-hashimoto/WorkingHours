@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="robots" content="noindex,nofollow">
 <link rel="stylesheet" type="text/css" href="WorkTable.css">
-<title>勤務表</title>
+<title>出勤簿</title>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.13/angular.min.js"></script>
 <script src="WorkTable.js"></script>
 </head>
@@ -14,7 +14,7 @@
 <div class="tabs">
     <!-- タブ1 -->
     <input id="tab_WorkTbl" type="radio" name="tab_item" checked>
-    <label class="tab_item" for="tab_WorkTbl">勤務表</label>
+    <label class="tab_item" for="tab_WorkTbl">出勤簿</label>
     <!-- タブ2 -->
     <input id="tab_schedule" type="radio" name="tab_item">
     <label class="tab_item" for="tab_schedule">スケジュール</label>
@@ -25,9 +25,14 @@
     <div ng-controller="WorkTblCtrl">
         <button class="btn_shiftMonth" ng-click="shiftMonth(-1)"> < 前月 </button>
         <button class="btn_shiftMonth" ng-click="shiftMonth(1)"> 次月 > </button>
-        <h2>{{tuki}} 勤務表 </h2>
+        <table>
+        <tr>
+        <td width="300px"><h3>{{tuki}} 出勤簿 </h3></td>
+        <td width="200px"><label style="font-weight: bold">氏名 : {{staff_name}}</label></td>
+        <td width="300px"><label style="font-weight: bold">所属 : {{staff_post}}</label></td>
+        </tr>
+        </table>
         <table class="WorkTblTb">
-
         <!-- 選択用時刻リスト -->
         <datalist id="WorkStTimeList">
             <option value="08:00"></option>
@@ -48,7 +53,7 @@
             <option value="18:00"></option>
             <option value="18:30"></option>
             <option value="19:00"></option>
-            <option value="19:20"></option>
+            <option value="19:30"></option>
             <option value="20:00"></option>
             <option value="20:30"></option>
             <option value="21:00"></option>
@@ -94,7 +99,9 @@
         </tr>
         <!-- データ -->
         <tr ng-repeat="(index, day_work) in day_works">
+            <!-- 日 -->
             <th>{{day_work.day}}</th>
+            <!-- 曜日 -->
             <th>{{day_work.dayofweek}}</th>
             <!-- 始業時間 -->
             <td><input type="time" style="width:85px" step="1800" list="WorkStTimeList" required
@@ -106,10 +113,21 @@
             <td><input type="time" style="width:85px" step="1800" list="WorkBkTimeList" required
                 value="{{day_works[index].timBk}}" ng-model="day_works[index].timBk" ng-change="calcWkTim(index)"></td>
             <!-- 労働時間 -->
-            <td><input type="text" style="width:85px" 
+            <td><input type="text" style="width:85px; text-align:right" 
                 value="{{day_works[index].timWk}}" readonly>
             </td>
+            <!-- 備考 -->
             <td><input type="text" style="width:200px" maxlength="20" value="{{day_work.note}}"></td>
+        </tr>
+        <!-- 合計労働時間 -->
+        <tr>
+            <td class="disabelCell"></td>
+            <td class="disabelCell"></td>
+            <td class="disabelCell"></td>
+            <td class="disabelCell"></td>
+            <td class="disabelCell"></td>
+            <td style="text-align:right">{{sumWiTim}}</td>
+            <td class="disabelCell"></td>
         </tr>
         </table>
     </div>
