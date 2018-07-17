@@ -65,18 +65,25 @@ display: block;
 }
 /*選択されているタブのスタイルを変える*/
 .tabs input:checked + .tab_item {
-background-color: #008080;
+background-color: #2f4f4f;
 color: #fff;
 }
 
-/* 前月/次月ボタン */
-.btn_shiftMonth {
+/* 前月/次月ボタン、初期値設定ボタン */
+.btnSetDef {
+    margin: 3px;
+    background: #dcdcdc
+}
+.btn_shiftMonth{
+    padding: 0.25em 0.5em;
+    background: #008080;/*色*/
+    color: #FFF;
+}
+.btn_shiftMonth, 
+.btnSetDef {
     position: relative;
     display: inline-block;
-    padding: 0.25em 0.5em;
     text-decoration: none;
-    color: #FFF;
-    background: #2f4f4f;/*色*/
     border: solid 1px #006400;/*線色*/
     border-radius: 4px;
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.2);
@@ -87,3 +94,6 @@ color: #fff;
     box-shadow: none;
     text-shadow: none;
 }
+
+/* 初期値設定ボタン */
+
