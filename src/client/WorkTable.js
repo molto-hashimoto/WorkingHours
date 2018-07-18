@@ -124,4 +124,15 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
         }
         return ret;
     };
+    // 各時間の背景色を返す
+    $scope.getInputTimBackground = function(sumWiTim) {
+        var ret = {};
+        if (sumWiTim == 0) {
+            ret = {background :'#dcdcdc'};
+        }
+        else {
+            ret = {background:'#ffffff'};
+        }
+        return ret;
+    };
 }]);

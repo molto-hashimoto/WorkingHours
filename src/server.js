@@ -6,8 +6,9 @@ var mime = {
   ".css":  "text/css"
   // 読み取りたいMIMEタイプはここに追記
 };
+var io = require(“socket.io”).listen(8895);
 
-var http_server = new http.createServer(function(req, res) {
+var server = new http.createServer(function(req, res) {
 
   if (req.url == '/') {
     filePath = '/WorkTable.html';
@@ -24,5 +25,8 @@ var http_server = new http.createServer(function(req, res) {
       res.end(data, 'UTF-8');
     }
   });
-}).listen(3000);
-console.log('Server running at http://localhost:3000/');
+})
+
+server.listen(3000, function() {
+  console.log('Server running at http://localhost:3000/');
+});
