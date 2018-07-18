@@ -108,5 +108,20 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
             $scope.calcWkTim(index);
         }
     };
-
+    // 各曜日の背景色を返す
+    $scope.getholidayStyle = function(dayofweek){
+        var ret = {};
+        switch(dayofweek) {
+            case '土':
+                ret = {background: '#b0c4de'};
+                break;
+            case '日':
+                ret = {background: '#F5BCA9'};
+                break;
+            default:
+                ret = {background: '#f5f5dc'};
+                break;
+        }
+        return ret;
+    };
 }]);

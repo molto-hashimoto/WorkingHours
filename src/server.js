@@ -14,7 +14,7 @@ var http_server = new http.createServer(function(req, res) {
   } else {
     filePath = req.url;
   }
-  var fullPath = __dirname + filePath;
+  var fullPath = __dirname + '/client/' + filePath;
 
   res.writeHead(200, {"Content-Type": mime[path.extname(fullPath)] || "text/plain"});
   fs.readFile(fullPath, function(err, data) {

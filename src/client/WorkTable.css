@@ -13,6 +13,11 @@
 	border:1px solid #000;
 	border-collapse: collapse;
 }
+.inputTime {
+    width:95px;
+    font-size: 16px;
+    text-align:right;
+}
 .set_default {
 	border-style: none;
 }
