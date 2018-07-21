@@ -1,6 +1,10 @@
 
 var WorkTblApp = angular.module('WorkTblApp', []);
 
+var socketio = io.connect('http://localhost:3000');
+socketio.on("connected", function(name) {});
+socketio.emit("connected", "hello");
+
 WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
 
     // ユーザ名、所属
@@ -25,13 +29,18 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
 
     // 労働時間リスト
     $scope.work_table = [];
-    $scope.sumWiTim = 0;
+    $scope.sumWkTim = 0;
+    $scope.numWkDays = 0;
 
     // 労働合計時間計算
     $scope.calcSumWkTim = function(){
-        $scope.sumWiTim = 0;
+        $scope.sumWkTim = 0;
+        $scope.numWkDays = 0;
         for(obj of $scope.work_table) {
-            $scope.sumWiTim += obj.timWk;
+            $scope.sumWkTim += obj.timWk;
+            if (obj.timWk > 0){
+                $scope.numWkDays += 1;
+            }
         }
     };
 
@@ -136,7 +145,7 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
     // 各時間の背景色を返す
     $scope.getInputTimBackground = function(sumWkTim) {
         var ret = {};
-        if (sumWkTim == 0) {
+        if (sumWkTim <= 0) {
             ret = {background :'#dcdcdc'};
         }
         else {

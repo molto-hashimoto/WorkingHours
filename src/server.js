@@ -33,7 +33,7 @@ var io = require('socket.io').listen(server);
 io.sockets.on("connection", function (socket) {
 
   socket.on("connected", function (name) {
-
+    console.log("hello");
   });
 
   socket.on("disconnect", function () {

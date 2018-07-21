@@ -6,7 +6,7 @@
 <link rel="stylesheet" type="text/css" href="WorkTable.css">
 <title>出勤簿</title>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.13/angular.min.js"></script>
-<!--<script src="/socket.io/socket.io.js"></script> -->
+<script src="/socket.io/socket.io.js"></script>
 <script src="WorkTable.js"></script>
 </head>
 
@@ -127,8 +127,8 @@
             <td class="disabelCell"></td>
             <td class="disabelCell"></td>
             <td class="disabelCell"></td>
-            <td style="font-size: 18px; text-align:right">{{sumWiTim}}</td>
-            <td class="disabelCell"></td>
+            <td style="font-size: 18px; text-align:right">{{sumWkTim}}</td>
+            <td style="font-size: 18px; text-align:right">勤務日数 : {{numWkDays}}</td>
         </tr>
         </table>
     </div>
