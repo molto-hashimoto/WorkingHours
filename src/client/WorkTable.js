@@ -7,15 +7,16 @@ socketio.emit("connected", "hello");
 
 WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
 
-    // ユーザ名、所属
-    $scope.staff_name = "name";
-    $scope.staff_post = "post";
-
     // パラメータ用定義値
     $scope.OBJ_MEMBER_TIM_ST = 2;
     $scope.OBJ_MEMBER_TIM_EN = 3;
     $scope.OBJ_MEMBER_TIM_BK = 4;
 
+    // ユーザ名、所属
+    $scope.staff_name = "name";
+    $scope.staff_post = "post";
+
+    // 年月設定
     var today = new Date();
     $scope.thisYear = today.getFullYear();
     $scope.thisMonth = today.getMonth();  // 0-11
@@ -89,6 +90,12 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
         $scope.setWorkTable($scope.thisYear, $scope.thisMonth-1, 16, lastday);
         // 1~15
         $scope.setWorkTable($scope.thisYear, $scope.thisMonth, 1, 15);
+
+        // サーバに年月を通知
+        socketio.emit("date_info", {"name" : $scope.staff_name, 
+        "post" : $scope.staff_post,
+        "year" : $scope.thisYear, 
+        "month" : $scope.thisMonth});
     };
     // 今月の表示
     $scope.createWorkTable();
@@ -153,4 +160,33 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
         }
         return ret;
     };
+
+    $scope.submit_workTable = function() {
+        // tableにハッシュキーが入っているため、JSON形式に変換
+        // DB登録用にkeyを付加する
+        var jsonWorkTable = {"name"     : $scope.staff_name, 
+                             "post"     : $scope.staff_post,
+                             "year"     : $scope.thisYear, 
+                             "month"    : $scope.thisMonth,
+                             "table"    : JSON.parse(angular.toJson($scope.work_table))};
+        socketio.emit("work_table_data", jsonWorkTable);
+        alert('送信しました');
+    };
+
+    socketio.on("work_table_data", function(tableData) {
+
+        if (tableData != undefined) {
+            $scope.work_table = tableData["table"];
+            for (obj of $scope.work_table) {
+                // 文字列→Date型
+                obj.timSt = new Date(obj.timSt);
+                obj.timEn = new Date(obj.timEn);
+                obj.timBk = new Date(obj.timBk);
+            }
+            // 合計時間計算
+            $scope.calcSumWkTim();
+            // 外部イベントで$scopeを変更しても反映されないため、強制的に更新。
+            $scope.$apply();
+        }
+    });
 }]);
