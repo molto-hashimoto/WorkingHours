@@ -28,20 +28,14 @@ var server = new http.createServer(function(req, res) {
 server.listen(3000, function() {
   console.log('Server running at http://localhost:3000/');
 });
-
+// mongoDB接続
+MongoClient.connect('mongodb://127.0.0.1:27017/myDB', function(err, client) {
+  obj_mongodb = client.db("testdb");
+});
 // web socket　listen
 var io = require('socket.io').listen(server);
 // web socket connected
 io.sockets.on("connection", function (socket) {
-
-  // msg "connected" recv func
-  socket.on("connected", function (name) {
-    console.log(name);
-  });
-  // msg "disconnect" recv func
-  socket.on("disconnect", function () {
-
-  });
 
   // クライアント起動時にユーザ名、年、月を受信
   socket.on("date_info", function(dateInfo){
@@ -58,7 +52,7 @@ io.sockets.on("connection", function (socket) {
     });
   });
 
-  // 勤怠データ受信処理
+  // 労働時間テーブル受信処理
   socket.on("work_table_data", function (workTableData) {
     console.log(workTableData);
 
@@ -76,9 +70,3 @@ io.sockets.on("connection", function (socket) {
   });
 });
 
-// mongoDB接続
-MongoClient.connect('mongodb://127.0.0.1:27017/myDB', function(err, client) {
-  obj_mongodb = client.db("testdb");
-
-//    db.close();
-});

@@ -1,19 +1,19 @@
 
 var WorkTblApp = angular.module('WorkTblApp', []);
 
+// web socket connect
 var socketio = io.connect('http://localhost:3000');
-socketio.on("connected", function(name) {});
-socketio.emit("connected", "hello");
 
 WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
 
-    // パラメータ用定義値
+    // 時刻種別
     $scope.OBJ_MEMBER_TIM_ST = 2;
     $scope.OBJ_MEMBER_TIM_EN = 3;
     $scope.OBJ_MEMBER_TIM_BK = 4;
 
-    // ユーザ名、所属
-    $scope.staff_name = "name";
+    // ユーザ名、所属、パスワード
+    $scope.staff_name = prompt('ユーザ名');
+    $scope.password = prompt('パスワード')
     $scope.staff_post = "post";
 
     // 年月設定
@@ -60,6 +60,7 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
         $scope.calcSumWkTim();
     };
 
+    // 指定年月 開始日～終了日の箱を生成
     $scope.setWorkTable = function(year, month, startDay, endDay){
         var weekjp = new Array("日","月","火","水","木","金","土");
         for (var dayCnt=startDay ; dayCnt <= endDay ; dayCnt++){
@@ -80,7 +81,7 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
         }
     };
 
-    // 労働時間リスト生成
+    // 労働時間テーブル生成
     $scope.createWorkTable = function(){
         //月末を取得 (次月の0日)
         var lastday = new Date($scope.thisYear, $scope.thisMonth, 0);
@@ -92,20 +93,22 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
         $scope.setWorkTable($scope.thisYear, $scope.thisMonth, 1, 15);
 
         // サーバに年月を通知
-        socketio.emit("date_info", {"name" : $scope.staff_name, 
-        "post" : $scope.staff_post,
-        "year" : $scope.thisYear, 
-        "month" : $scope.thisMonth});
+        socketio.emit("date_info", {"name" : $scope.staff_name,
+                                    "post" : $scope.staff_post,
+                                    "year" : $scope.thisYear, 
+                                    "month" : $scope.thisMonth});
     };
     // 今月の表示
     $scope.createWorkTable();
 
     // 月移動
     $scope.shiftMonth = function(shift){
+        // 指定された値ずれたDateを取得
         today = new Date($scope.thisYear, $scope.thisMonth + shift, 1);
         $scope.thisYear = today.getFullYear();
         $scope.thisMonth = today.getMonth();
         $scope.work_table = [];
+        // テーブル作成
         $scope.createWorkTable();
     };
 
@@ -161,6 +164,7 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
         return ret;
     };
 
+    // サーバに労働時間テーブルを送信する
     $scope.submit_workTable = function() {
         // tableにハッシュキーが入っているため、JSON形式に変換
         // DB登録用にkeyを付加する
@@ -172,7 +176,7 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
         socketio.emit("work_table_data", jsonWorkTable);
         alert('送信しました');
     };
-
+    // 労働時間テーブル受信時処理
     socketio.on("work_table_data", function(tableData) {
 
         if (tableData != undefined) {
