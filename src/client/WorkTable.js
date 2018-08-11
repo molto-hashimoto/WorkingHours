@@ -16,6 +16,9 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
     $scope.password = prompt('パスワード')
     $scope.staff_post = "post";
 
+    // ユーザ名、パスワード送信
+    socketio.emit("userInfo", {"name" : $scope.staff_name, "pw" : $scope.password});
+
     // 年月設定
     var today = new Date();
     $scope.thisYear = today.getFullYear();
