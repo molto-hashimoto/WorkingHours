@@ -6,10 +6,17 @@ const express = require('express');
 const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
+const bodyParser = require('body-parser');
 // assert
 const assert = require('assert');
 // mongodb
 const MongoClient = require('mongodb').MongoClient;
+
+// clientフォルダ内のjs、cssを提供する
+app.use(express.static('client'));
+// bodyParser初期化
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
 
 // mongodbクライアント管理用
 var obj_mongodb;
@@ -39,8 +46,6 @@ http.listen(3000, function(){
 
 // パス指定なし→ログイン画面返却
 app.get('/', function(req, res) {
-  // clientフォルダ内のjs、cssを提供する
-  app.use(express.static('client'));
   // クライアントから指定されたファイルをresponse (localhost:3000/client/WorkTable.htmlを指定すること)
   var fullPath = __dirname + '/client/login.html';
   res.writeHead(200, {"Content-Type": mime[path.extname(fullPath)] || "text/plain"});
@@ -51,6 +56,34 @@ app.get('/', function(req, res) {
       res.end(data, 'UTF-8');
     }
   });
+});
+
+app.get('/login_request', function(req, res) {
+
+  // ID検索
+  result = client_ids.find(function(elm){
+    return elm['ID'] == Number(req.query.id);
+  });
+
+  if (result != undefined){
+    var fullPath = __dirname + '/client/WorkTable.html';
+    res.writeHead(200, {"Content-Type": mime[path.extname(fullPath)] || "text/plain"});
+    fs.readFile(fullPath, function(err, data) {
+      if (err) {
+        // エラー時の応答
+      } else {
+        res.end(data, 'UTF-8');
+      }
+    });
+  }
+  else {
+    res.end("login error")
+  }
+});
+
+app.use(function(req, res, next){
+	res.status(404);
+	res.end('my notfound! : ' + req.path);
 });
 
 // web socket connected
@@ -71,10 +104,10 @@ io.sockets.on("connection", function (socket) {
       if (document != null) {
         // login IDを生成
         var loginId = Math.floor( Math.random() * 101 );
-        loginId += Math.floor( Math.random() * 101 );
+        loginId *= Math.floor( Math.random() * 101 );
         // UNIX時刻
         var time = getUnixTime();
-        client_ids.push({'ID': loginId, 'time': time});
+        client_ids.push({'name': document['name'], 'ID': loginId, 'time': time});
         // ログインIDをクライアントに送信
         socket.emit("login", {'name': document['name'], 'id': loginId});
 
@@ -111,7 +144,7 @@ io.sockets.on("connection", function (socket) {
     obj_mongodb.collection('workTable').find({
       'name': dateInfo['name'], 'year': dateInfo['year'], 'month': dateInfo['month']
     }).toArray(function(error, documents) {
-      assert.equal(err, null);
+      assert.equal(error, null);
       console.log(documents);
       if (documents.length != 0) {
         socket.emit("work_table_data", documents[0]);

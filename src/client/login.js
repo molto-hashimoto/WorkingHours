@@ -15,7 +15,9 @@ loginApp.controller('loginCtrl', ['$scope', function ($scope) {
 	};
 	// ログイン成功時のID受信処理
     socketio.on("login", function(info) {
-		$scope.loginId = info['id'];
-		$scope.loginName = info['name'];
+
+		var url = "/login_request" + "?&id=" + info['id'] + "&name=" + info['name'];
+
+		document.location.href = url;
 	});
 }]);
