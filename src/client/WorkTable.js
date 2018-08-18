@@ -1,10 +1,20 @@
 
-var WorkTblApp = angular.module('WorkTblApp', []);
+const WorkTblApp = angular.module('WorkTblApp', []);
 
 // web socket connect
-var socketio = io.connect('http://localhost:3000');
+const socketio = io.connect('http://localhost:3000');
 
 WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
+
+    const request = new XMLHttpRequest();
+    request.open("POST", `/user`);
+    request.addEventListener("load", (event) => {
+        console.log(event.target.status); // => 200
+        console.log(event.target.responseText); // => "{...}"
+        $scope.staff_name = event.target.responseText;
+        $scope.$apply();
+    });
+    request.send();
 
     // 時刻種別
     $scope.OBJ_MEMBER_TIM_ST = 2;
@@ -12,15 +22,11 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
     $scope.OBJ_MEMBER_TIM_BK = 4;
 
     // ユーザ名、所属、パスワード
-    $scope.staff_name = prompt('ユーザ名');
-    $scope.password = prompt('パスワード')
-    $scope.staff_post = "post";
-
-    // ユーザ名、パスワード送信
-    socketio.emit("userInfo", {"name" : $scope.staff_name, "pw" : $scope.password});
+//    $scope.staff_name;
+    $scope.staff_post;
 
     // 年月設定
-    var today = new Date();
+    let today = new Date();
     $scope.thisYear = today.getFullYear();
     $scope.thisMonth = today.getMonth();  // 0-11
     if (today.getDate() > 15) {
@@ -50,11 +56,11 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
 
     // 労働時間計算
     $scope.calcWkTim = function(index){
-        var obj = $scope.work_table[index];
+        let obj = $scope.work_table[index];
         // (終業時間-始業時間) (分)
-        var workingTime = (obj.timEn.getTime() - obj.timSt.getTime()) / (1000*60);
+        let workingTime = (obj.timEn.getTime() - obj.timSt.getTime()) / (1000*60);
         // 休憩時間 (分)
-        var breakTime = (obj.timBk.getHours() * 60) + obj.timBk.getMinutes();
+        let breakTime = (obj.timBk.getHours() * 60) + obj.timBk.getMinutes();
         workingTime -= breakTime;
         workingTime /= 60;
         obj.timWk = workingTime;
@@ -65,11 +71,11 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
 
     // 指定年月 開始日～終了日の箱を生成
     $scope.setWorkTable = function(year, month, startDay, endDay){
-        var weekjp = new Array("日","月","火","水","木","金","土");
-        for (var dayCnt=startDay ; dayCnt <= endDay ; dayCnt++){
-            var xday = new Date(year, month, dayCnt);
+        const weekjp = new Array("日","月","火","水","木","金","土");
+        for (let dayCnt=startDay ; dayCnt <= endDay ; dayCnt++){
+            let xday = new Date(year, month, dayCnt);
             // 曜日取得(0~6)
-            var xdays = xday.getDay();
+            let xdays = xday.getDay();
             $scope.work_table.push({
                 year        : xday.getFullYear(),   // 年
                 month       : xday.getMonth(),      // 月
@@ -87,7 +93,7 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
     // 労働時間テーブル生成
     $scope.createWorkTable = function(){
         //月末を取得 (次月の0日)
-        var lastday = new Date($scope.thisYear, $scope.thisMonth, 0);
+        let lastday = new Date($scope.thisYear, $scope.thisMonth, 0);
         lastday = lastday.getDate();
 
         // 16~月末
@@ -118,8 +124,8 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
     // 各時間の初期値設定（土日以外）
     $scope.setDefTim = function(type ,val){
 
-        for(index in $scope.work_table) {
-            var obj = $scope.work_table[index];
+        for(let index in $scope.work_table) {
+            let obj = $scope.work_table[index];
             // 日付変更
             if ((obj.dayofweek != "土") && (obj.dayofweek != "日")){
                 switch(type) {
@@ -141,7 +147,7 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
     };
     // 各曜日の背景色を返す
     $scope.getholidayStyle = function(dayofweek){
-        var ret = {};
+        let ret = {};
         switch(dayofweek) {
             case '土':
                 ret = {background: '#b0c4de'};
@@ -157,7 +163,7 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
     };
     // 各時間の背景色を返す
     $scope.getInputTimBackground = function(sumWkTim) {
-        var ret = {};
+        let ret = {};
         if (sumWkTim <= 0) {
             ret = {background :'#dcdcdc'};
         }
@@ -171,7 +177,7 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
     $scope.submit_workTable = function() {
         // tableにハッシュキーが入っているため、JSON形式に変換
         // DB登録用にkeyを付加する
-        var jsonWorkTable = {"name"     : $scope.staff_name, 
+        let jsonWorkTable = {"name"     : $scope.staff_name, 
                              "post"     : $scope.staff_post,
                              "year"     : $scope.thisYear, 
                              "month"    : $scope.thisMonth,
@@ -184,7 +190,7 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
 
         if (tableData != undefined) {
             $scope.work_table = tableData["table"];
-            for (obj of $scope.work_table) {
+            for (let obj of $scope.work_table) {
                 // 文字列→Date型
                 obj.timSt = new Date(obj.timSt);
                 obj.timEn = new Date(obj.timEn);

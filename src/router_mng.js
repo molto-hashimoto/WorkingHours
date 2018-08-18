@@ -10,20 +10,28 @@ const router = express.Router();
 // MIMEタイプ
 const mime = {".html": "text/html", ".css":  "text/css"};
 
-// パス指定なし→ログイン画面返却
 router.get('/', function(req, res) {
-	// クライアントから指定されたファイルをresponse (localhost:3000/client/WorkTable.htmlを指定すること)
+	// ログイン済
+	if (req.session.user_email) {
+		res.redirect('/user');
+	}
+	// 未ログイン
+	else {
+		res.redirect('/login');
+	}
+});
+router.get('/login', function(req, res) {
+	// ログイン画面返却
 	const fullPath = __dirname + '/client/login.html';
 	res.writeHead(200, {"Content-Type": mime[path.extname(fullPath)] || "text/plain"});
 	fs.readFile(fullPath, function(err, data) {
 		if (err) {
-		// エラー時の応答
+			res.send('page read error');
 		} else {
-		res.end(data, 'UTF-8');
+			res.end(data, 'UTF-8');
 		}
 	});
 });
-// メールアドレス、PW指定によるログイン
 router.post('/login', function(req, res) {
 	// 認証
 	getMongoObj().collection('userInfo').findOne({
@@ -33,18 +41,38 @@ router.post('/login', function(req, res) {
 		console.log("login : " + req.body['addr']);
 		// ログイン成功
 		if (document != null) {
-			req.session.user = req.body['addr'];
-
-			// 勤怠ページ返却
-			const fullPath = __dirname + '/client/WorkTable.html';
-			res.writeHead(200, {"Content-Type": mime[path.extname(fullPath)] || "text/plain"});
-			fs.readFile(fullPath, function(err, data) {
-				if (err) {
-				// エラー時の応答
-				} else {
+			req.session.user_email = req.body['addr'];
+			res.redirect('/user');
+		}
+	})
+});
+router.get('/user', function(req, res) {
+	// ログイン済
+	if (req.session.user_email) {
+		// 勤怠ページ返却
+		const fullPath = __dirname + '/client/WorkTable.html';
+		res.writeHead(200, {"Content-Type": mime[path.extname(fullPath)] || "text/plain"});
+		fs.readFile(fullPath, function(err, data) {
+			if (err) {
+				res.send('page read error');
+			} else {
 				res.end(data, 'UTF-8');
-				}
-			});
+			}
+		});
+	}
+	// 未ログイン
+	else {
+		res.redirect('/');
+	}
+});
+router.post('/user', function(req, res) {
+	// 認証
+	getMongoObj().collection('userInfo').findOne({
+		'addr': req.session.user_email
+	}, function(err, document){
+		assert.equal(err, null);
+		if (document != null) {
+			res.send(document.name);
 		}
 	})
 });
