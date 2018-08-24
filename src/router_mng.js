@@ -72,7 +72,7 @@ router.post('/user', function(req, res) {
 	}, function(err, document){
 		assert.equal(err, null);
 		if (document != null) {
-			res.send(document.name);
+			res.send({'name': document.name, 'post': document.post});
 		}
 	})
 });

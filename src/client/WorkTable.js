@@ -5,24 +5,13 @@ const WorkTblApp = angular.module('WorkTblApp', []);
 const socketio = io.connect('http://localhost:3000');
 
 WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
-
-    const request = new XMLHttpRequest();
-    request.open("POST", `/user`);
-    request.addEventListener("load", (event) => {
-        console.log(event.target.status); // => 200
-        console.log(event.target.responseText); // => "{...}"
-        $scope.staff_name = event.target.responseText;
-        $scope.$apply();
-    });
-    request.send();
-
     // 時刻種別
     $scope.OBJ_MEMBER_TIM_ST = 2;
     $scope.OBJ_MEMBER_TIM_EN = 3;
     $scope.OBJ_MEMBER_TIM_BK = 4;
 
-    // ユーザ名、所属、パスワード
-//    $scope.staff_name;
+    // ユーザ名、所属
+    $scope.staff_name;
     $scope.staff_post;
 
     // 年月設定
@@ -107,8 +96,6 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
                                     "year" : $scope.thisYear, 
                                     "month" : $scope.thisMonth});
     };
-    // 今月の表示
-    $scope.createWorkTable();
 
     // 月移動
     $scope.shiftMonth = function(shift){
@@ -172,6 +159,20 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
         }
         return ret;
     };
+
+    // ユーザ名取得
+    const request = new XMLHttpRequest();
+    request.open("POST", `/user`);
+    request.addEventListener("load", (event) => {
+        userinfo = JSON.parse(event.target.responseText);
+        $scope.staff_name = userinfo.name;
+        $scope.staff_post = userinfo.post;
+        $scope.$apply();
+
+        // 今月の表示
+        $scope.createWorkTable();
+    });
+    request.send();
 
     // サーバに労働時間テーブルを送信する
     $scope.submit_workTable = function() {
