@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<link rel="stylesheet" type="text/css" href="WorkTable.css">
+<title>出勤簿</title>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.13/angular.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="WorkTable.js"></script>
+</head>
+
+<body ng-app="WorkTblApp">
+
+    <div ng-controller="WorkTblCtrl">
+        <select class="select_user" ng-model="selectedUser" ng-options="user for user in userList" ng-change="selectUser()"></select>
+        <button class="btn_shiftMonth" ng-click="shiftMonth(-1)"> < 前月 </button>
+        <button class="btn_shiftMonth" ng-click="shiftMonth(1)"> 次月 > </button>
+
+        <table>
+        <tr>
+        <td width="300px"><h3>{{thisYear}}年{{thisMonth+1}}月 出勤簿 </h3></td>
+        <td width="200px"><label style="font-weight: bold">氏名 : {{staff_name}}</label></td>
+        <td width="300px"><label style="font-weight: bold">所属 : {{staff_post}}</label></td>
+        </tr>
+        </table>
+        <table class="WorkTblTb">
+
+        <!-- ヘッダ -->
+        <tr>
+            <th width="60px">日付</th>
+            <th width="40px">曜日</th>
+            <th>始業時間</th>
+            <th>終業時間</th>
+            <th>休憩時間</th>
+            <th>労働時間</th>
+            <th>備考</th>
+        </tr>
+        <!-- データ -->
+        <tr ng-repeat="(index, day_work) in work_table">
+            <!-- 日 -->
+            <th ng-style="getholidayStyle(day_work.dayofweek)">{{day_work.month+1}}/{{day_work.day}}</th>
+            <!-- 曜日 -->
+            <th ng-style="getholidayStyle(day_work.dayofweek)">{{day_work.dayofweek}}</th>
+            <!-- 始業時間 -->
+            <td><input type="time" readonly class="inputTime" step="1800" list="WorkStTimeList"
+                value="{{work_table[index].timSt}}" ng-model="work_table[index].timSt" ng-change="calcWkTim(index)"></td>
+            <!-- 終業時間 -->
+            <td><input type="time" readonly class="inputTime" step="1800" list="WorkEnTimeList"
+                value="{{work_table[index].timEn}}" ng-model="work_table[index].timEn" ng-change="calcWkTim(index)"></td>
+            <!-- 休憩時間 -->
+            <td><input type="time" readonly class="inputTime" step="1800" list="WorkBkTimeList"
+                value="{{work_table[index].timBk}}" ng-model="work_table[index].timBk" ng-change="calcWkTim(index)"></td>
+            <!-- 労働時間 -->
+            <td><input type="text" readonly class="inputTime" 
+                value="{{work_table[index].timWk}}" readonly>
+            </td>
+            <!-- 備考 -->
+            <td><input type="text" readonly style="width:200px" maxlength="20" value="{{day_work.note}}" ng-model="day_work.note"></td>
+        </tr>
+        <!-- 合計労働時間 -->
+        <tr>
+            <td class="disabelCell"></td>
+            <td class="disabelCell"></td>
+            <td class="disabelCell"></td>
+            <td class="disabelCell"></td>
+            <td class="disabelCell"></td>
+            <td style="font-size: 18px; text-align:right">{{sumWkTim}}</td>
+            <td style="font-size: 18px; text-align:right">勤務日数 : {{numWkDays}}</td>
+        </tr>
+        </table>
+    </div>
+    
+</body>
+</html>

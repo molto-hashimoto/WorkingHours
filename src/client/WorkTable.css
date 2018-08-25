@@ -120,5 +120,12 @@ color: #fff;
     background: #2f4f4f;
 }
 
-/* 初期値設定ボタン */
+@media print{
+    .select_user{display:none;}
+    .btn_shiftMonth{display:none;}
+}
+@page {
+    size: A4;
+    margin: 2mm;
+}
 

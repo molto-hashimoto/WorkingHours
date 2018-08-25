@@ -19,35 +19,51 @@ io.sockets.on("connection", function (socket) {
   });
 
   // クライアント起動時にユーザ名、年、月を受信
-  socket.on("date_info", function(dateInfo){
-    console.log(dateInfo);
-
+  socket.on("getReq_date_info", function(dateInfo){
     // 受信した情報に一致するデータをmongoDBから取得 -> 送信
-    getMongoObj().collection('workTable').find({
-      'name': dateInfo['name'], 'year': dateInfo['year'], 'month': dateInfo['month']
-    }).toArray(function(error, documents) {
+    query = {
+      'name': dateInfo['name'], 
+      'year': dateInfo['year'], 
+      'month': dateInfo['month']
+    }
+    getMongoObj().collection('workTable').find(query).toArray(function(error, documents) {
       assert.equal(error, null);
       console.log(documents);
       if (documents.length != 0) {
-        socket.emit("work_table_data", documents[0]);
+        socket.emit("getRes_date_info", documents[0]);
       }
     });
   });
 
   // 労働時間テーブル受信処理
-  socket.on("work_table_data", function (workTableData) {
+  socket.on("setReq_work_table_data", function (workTableData) {
     console.log(workTableData);
 
     // mongoDB に受信データを登録
     if (getMongoObj() != undefined) {
       // ユーザ名、年月が一致するレコードを更新、なければ新規作成
-      getMongoObj().collection('workTable').updateOne({
-        'name': workTableData['name'], 'year': workTableData['year'], 'month': workTableData['month']
-      }, {$set : workTableData}, { upsert: true }, function(err, result) {
+      query = {
+        'name': workTableData['name'], 
+        'year': workTableData['year'], 
+        'month': workTableData['month']
+      }
+      getMongoObj().collection('workTable').updateOne(query, {$set : workTableData}, { upsert: true }, function(err, result) {
         assert.equal(err, null);
         assert.equal(1, result.result.n);
         console.log('update document');
       });
     }
+  });
+
+  // ユーザリスト取得
+  socket.on("getReq_user_list", function(){
+    getMongoObj().collection('userInfo').find().toArray(function(error, documents) {
+      assert.equal(error, null);
+      console.log(documents);
+      if (documents.length != 0) {
+        socket.emit("getRes_user_list", documents);
+      }
+    });
+
   });
 });

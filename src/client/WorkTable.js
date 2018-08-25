@@ -10,6 +10,10 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
     $scope.OBJ_MEMBER_TIM_EN = 3;
     $scope.OBJ_MEMBER_TIM_BK = 4;
 
+    $scope.userInfoList = [];
+    $scope.userList = [];
+    $scope.selectedUser;
+
     // ユーザ名、所属
     $scope.staff_name;
     $scope.staff_post;
@@ -91,8 +95,7 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
         $scope.setWorkTable($scope.thisYear, $scope.thisMonth, 1, 15);
 
         // サーバに年月を通知
-        socketio.emit("date_info", {"name" : $scope.staff_name,
-                                    "post" : $scope.staff_post,
+        socketio.emit("getReq_date_info", {"name" : $scope.staff_name,
                                     "year" : $scope.thisYear, 
                                     "month" : $scope.thisMonth});
     };
@@ -160,17 +163,37 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
         return ret;
     };
 
+    // ユーザ選択時処理
+    $scope.selectUser = function() {
+        $scope.staff_name = $scope.selectedUser;
+        for(let obj of $scope.userInfoList) {
+            if (obj.name == $scope.staff_name) {
+                $scope.staff_post = obj.post;
+            }
+        }
+        // テーブル初期化
+        $scope.work_table = [];
+        // 今月の表示
+        $scope.createWorkTable();
+    }
+
     // ユーザ名取得
     const request = new XMLHttpRequest();
     request.open("POST", `/user`);
     request.addEventListener("load", (event) => {
         userinfo = JSON.parse(event.target.responseText);
-        $scope.staff_name = userinfo.name;
-        $scope.staff_post = userinfo.post;
-        $scope.$apply();
-
-        // 今月の表示
-        $scope.createWorkTable();
+        // rootの場合、ユーザリストを取得する。
+        if (userinfo.name == "root") {
+            socketio.emit("getReq_user_list");
+        }
+        // 通常ユーザの場合、勤務表を表示する。
+        else {
+            $scope.staff_name = userinfo.name;
+            $scope.staff_post = userinfo.post;
+            $scope.$apply();
+            // 今月の表示
+            $scope.createWorkTable();
+        }
     });
     request.send();
 
@@ -183,11 +206,11 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
                              "year"     : $scope.thisYear, 
                              "month"    : $scope.thisMonth,
                              "table"    : JSON.parse(angular.toJson($scope.work_table))};
-        socketio.emit("work_table_data", jsonWorkTable);
+        socketio.emit("setReq_work_table_data", jsonWorkTable);
         alert('送信しました');
     };
     // 労働時間テーブル受信時処理
-    socketio.on("work_table_data", function(tableData) {
+    socketio.on("getRes_date_info", function(tableData) {
 
         if (tableData != undefined) {
             $scope.work_table = tableData["table"];
@@ -202,5 +225,16 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
             // 外部イベントで$scopeを変更しても反映されないため、強制的に更新。
             $scope.$apply();
         }
+    });
+
+    // ユーザリスト取得応答
+    socketio.on("getRes_user_list", function(userInfoList) {
+        $scope.userInfoList = userInfoList;
+        for(let obj of userInfoList) {
+            if (obj.name != "root") {
+                $scope.userList.push(obj.name);
+            }
+        }
+        $scope.$apply();
     });
 }]);
