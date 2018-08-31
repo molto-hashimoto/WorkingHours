@@ -4,7 +4,14 @@ const WorkTblApp = angular.module('WorkTblApp', []);
 // web socket connect
 const socketio = io.connect('http://localhost:3000');
 
+// 祝日判定用APIのrequire
+let judgeHoliday;
+require(['judgeHoliday'], function(JudgeHoliday) {
+    judgeHoliday = JudgeHoliday;
+});
+
 WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
+
     // 時刻種別
     $scope.OBJ_MEMBER_TIM_ST = 2;
     $scope.OBJ_MEMBER_TIM_EN = 3;
@@ -117,7 +124,7 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
         for(let index in $scope.work_table) {
             let obj = $scope.work_table[index];
             // 日付変更
-            if ((obj.dayofweek != "土") && (obj.dayofweek != "日")){
+            if ((obj.dayofweek != "土") && (obj.dayofweek != "日") && (true != judgeHoliday.isHoliday(obj.timSt))){
                 switch(type) {
                 case $scope.OBJ_MEMBER_TIM_ST:
                     obj.timSt = new Date(obj.timSt.getFullYear(), obj.timSt.getMonth(), obj.timSt.getDate(), val.getHours(), val.getMinutes());
@@ -136,9 +143,9 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
         }
     };
     // 各曜日の背景色を返す
-    $scope.getholidayStyle = function(dayofweek){
+    $scope.getholidayStyle = function(dateObj){
         let ret = {};
-        switch(dayofweek) {
+        switch(dateObj.dayofweek) {
             case '土':
                 ret = {background: '#b0c4de'};
                 break;
@@ -146,7 +153,13 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
                 ret = {background: '#F5BCA9'};
                 break;
             default:
-                ret = {background: '#f5f5dc'};
+                // 祝日判定
+                if (true == judgeHoliday.isHoliday(dateObj.timSt)){
+                    ret = {background: '#ffd700'};
+                }
+                else {
+                    ret = {background: '#fffafa'};
+                }
                 break;
         }
         return ret;
