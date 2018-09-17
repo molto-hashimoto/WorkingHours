@@ -105,6 +105,8 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
         socketio.emit("getReq_date_info", {"name" : $scope.staff_name,
                                     "year" : $scope.thisYear, 
                                     "month" : $scope.thisMonth});
+
+        $scope.$apply();
     };
 
     // 月移動
