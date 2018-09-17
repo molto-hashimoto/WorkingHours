@@ -57,6 +57,9 @@ router.post('/login', function(req, res) {
 				res.redirect('/user');
 			}
 		}
+		else {
+			res.send('login error');
+		}
 	})
 });
 router.get('/user', function(req, res) {
@@ -86,6 +89,9 @@ router.post('/user', function(req, res) {
 		assert.equal(err, null);
 		if (document != null) {
 			res.send({'name': document.name, 'post': document.post});
+		}
+		else {
+			res.send('login error');
 		}
 	})
 });

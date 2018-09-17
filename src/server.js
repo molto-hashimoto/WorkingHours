@@ -8,14 +8,15 @@ const io = require('socket.io')(http);
 
 // web server  listen
 http.listen(3000, function(){
-  console.log('Server running at http://localhost:3000/');
+  console.log('Server running at http://192.168.1.204:3000/');
 });
 
 // web socket connected
 io.sockets.on("connection", function (socket) {
+  console.log("socket connected");
 
   socket.on('disconnect', function(data) {
-    
+    console.log("socket disconnected");
   });
 
   // クライアント起動時にユーザ名、年、月を受信
