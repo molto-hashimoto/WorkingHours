@@ -4,11 +4,9 @@ const WorkTblApp = angular.module('WorkTblApp', []);
 // web socket connect
 const socketio = io.connect('http://192.168.1.204:3000');
 
-// 祝日判定用APIのrequire
 let judgeHoliday;
-require(['judgeHoliday'], function(JudgeHoliday) {
-    judgeHoliday = JudgeHoliday;
-});
+
+function onLoad() {};
 
 WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
 
@@ -105,8 +103,6 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
         socketio.emit("getReq_date_info", {"name" : $scope.staff_name,
                                     "year" : $scope.thisYear, 
                                     "month" : $scope.thisMonth});
-
-        $scope.$apply();
     };
 
     // 月移動
@@ -192,25 +188,27 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
         $scope.createWorkTable();
     }
 
-    // ユーザ名取得
-    const request = new XMLHttpRequest();
-    request.open("POST", `/user`);
-    request.addEventListener("load", (event) => {
-        userinfo = JSON.parse(event.target.responseText);
-        // rootの場合、ユーザリストを取得する。
-        if (userinfo.name == "root") {
-            socketio.emit("getReq_user_list");
-        }
-        // 通常ユーザの場合、勤務表を表示する。
-        else {
-            $scope.staff_name = userinfo.name;
-            $scope.staff_post = userinfo.post;
-            $scope.$apply();
-            // 今月の表示
-            $scope.createWorkTable();
-        }
-    });
-    request.send();
+    $scope.post_user = function() {
+        // ユーザ名取得
+        const request = new XMLHttpRequest();
+        request.open("POST", `/user`);
+        request.addEventListener("load", (event) => {
+            userinfo = JSON.parse(event.target.responseText);
+            // rootの場合、ユーザリストを取得する。
+            if (userinfo.name == "root") {
+                socketio.emit("getReq_user_list");
+            }
+            // 通常ユーザの場合、勤務表を表示する。
+            else {
+                $scope.staff_name = userinfo.name;
+                $scope.staff_post = userinfo.post;
+                // 今月の表示
+                $scope.createWorkTable();
+                $scope.$apply();
+            }
+        });
+        request.send();
+    }
 
     // サーバに労働時間テーブルを送信する
     $scope.submit_workTable = function() {
@@ -251,5 +249,21 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
             }
         }
         $scope.$apply();
+    });
+
+    $scope.req_judgeHoliday = function() {
+        return new Promise(function(resolve, reject){
+            // 祝日判定用APIのrequire
+            require(['judgeHoliday'], function(JudgeHoliday) {
+                resolve(JudgeHoliday);
+            });
+        });
+    }
+
+    $scope.req_judgeHoliday().then(function(value){
+        judgeHoliday = value;
+        $scope.post_user();
+    }).catch(function(err){
+        console.log(err);
     });
 }]);

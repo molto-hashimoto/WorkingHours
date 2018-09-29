@@ -21,7 +21,7 @@
 .set_default {
 	border-style: none;
 }
-.disabelCell {
+.disableCell {
     background: #dcdcdc;
 }
 
