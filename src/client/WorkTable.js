@@ -2,6 +2,7 @@
 const WorkTblApp = angular.module('WorkTblApp', []);
 
 // web socket connect
+//const socketio = io.connect('http://127.0.0.1:3000');
 const socketio = io.connect('http://192.168.1.204:3000');
 
 let judgeHoliday;
@@ -18,6 +19,9 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
     $scope.userInfoList = [];
     $scope.userList = [];
     $scope.selectedUser;
+
+    // 編集有無フラグ
+    $scope.changeFlag = false;
 
     // ユーザ名、所属
     $scope.staff_name;
@@ -67,6 +71,13 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
         $scope.calcSumWkTim();
     };
 
+    // 編集判定用ラッパ関数
+    $scope.wrap_calcWkTim = function(index) {
+        $scope.calcWkTim(index);
+        // 編集あり
+        $scope.changeFlag = true;
+    }
+
     // 指定年月 開始日～終了日の箱を生成
     $scope.setWorkTable = function(year, month, startDay, endDay){
         const weekjp = new Array("日","月","火","水","木","金","土");
@@ -107,6 +118,16 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
 
     // 月移動
     $scope.shiftMonth = function(shift){
+
+        // 編集が破棄されることを通知
+        if ($scope.changeFlag == true) {
+            if (window.confirm('編集内容が破棄されます。よろしいですか？') == false) {
+                return;
+            }
+        }
+        // 月移動したら編集解除
+        $scope.changeFlag = false;
+
         // 指定された値ずれたDateを取得
         today = new Date($scope.thisYear, $scope.thisMonth + shift, 1);
         $scope.thisYear = today.getFullYear();
@@ -137,7 +158,7 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
                     break;
                 }
             }
-            $scope.calcWkTim(index);
+            $scope.wrap_calcWkTim(index);
         }
     };
     // 各曜日の背景色を返す
@@ -221,6 +242,8 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
                              "table"    : JSON.parse(angular.toJson($scope.work_table))};
         socketio.emit("setReq_work_table_data", jsonWorkTable);
         alert('送信しました');
+        // 編集なし
+        $scope.changeFlag = false;
     };
     // 労働時間テーブル受信時処理
     socketio.on("getRes_date_info", function(tableData) {

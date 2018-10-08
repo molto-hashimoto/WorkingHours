@@ -108,13 +108,13 @@
             <th ng-style="getholidayStyle(day_work)">{{day_work.dayofweek}}</th>
             <!-- 始業時間 -->
             <td><input type="time" class="inputTime" step="1800" list="WorkStTimeList" ng-style="getInputTimBackground(work_table[index].timWk)" required
-                value="{{work_table[index].timSt}}" ng-model="work_table[index].timSt" ng-change="calcWkTim(index)"></td>
+                value="{{work_table[index].timSt}}" ng-model="work_table[index].timSt" ng-change="wrap_calcWkTim(index)"></td>
             <!-- 終業時間 -->
             <td><input type="time" class="inputTime" step="1800" list="WorkEnTimeList" ng-style="getInputTimBackground(work_table[index].timWk)" required
-                value="{{work_table[index].timEn}}" ng-model="work_table[index].timEn" ng-change="calcWkTim(index)"></td>
+                value="{{work_table[index].timEn}}" ng-model="work_table[index].timEn" ng-change="wrap_calcWkTim(index)"></td>
             <!-- 休憩時間 -->
             <td><input type="time" class="inputTime" step="1800" list="WorkBkTimeList" ng-style="getInputTimBackground(work_table[index].timWk)" required
-                value="{{work_table[index].timBk}}" ng-model="work_table[index].timBk" ng-change="calcWkTim(index)"></td>
+                value="{{work_table[index].timBk}}" ng-model="work_table[index].timBk" ng-change="wrap_calcWkTim(index)"></td>
             <!-- 労働時間 -->
             <td><input type="text" class="inputTime" 
                 value="{{work_table[index].timWk}}" readonly>
