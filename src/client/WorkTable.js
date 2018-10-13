@@ -2,8 +2,8 @@
 const WorkTblApp = angular.module('WorkTblApp', []);
 
 // web socket connect
-//const socketio = io.connect('http://127.0.0.1:3000');
-const socketio = io.connect('http://192.168.1.204:3000');
+const socketio = io.connect('http://127.0.0.1:3000');
+//const socketio = io.connect('http://192.168.1.204:3000');
 
 let judgeHoliday;
 
@@ -31,6 +31,7 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
     let today = new Date();
     $scope.thisYear = today.getFullYear();
     $scope.thisMonth = today.getMonth();  // 0-11
+    // 16日以降は次月を表示
     if (today.getDate() > 15) {
         $scope.thisMonth+=1;
     }
@@ -87,7 +88,7 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
             let xdays = xday.getDay();
             $scope.work_table.push({
                 year        : xday.getFullYear(),   // 年
-                month       : xday.getMonth(),      // 月
+                month       : xday.getMonth()+1,    // 月(0~11のため＋1する)
                 day         : xday.getDate(),       // 日付
                 dayofweek   : weekjp[xdays],        // 曜日
                 timSt       : new Date(year, month, dayCnt),         // 始業時間
@@ -113,7 +114,7 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
         // サーバに年月を通知
         socketio.emit("getReq_date_info", {"name" : $scope.staff_name,
                                     "year" : $scope.thisYear, 
-                                    "month" : $scope.thisMonth});
+                                    "month" : $scope.thisMonth+1});
     };
 
     // 月移動
@@ -231,6 +232,28 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
         request.send();
     }
 
+    // ダウンロード
+    $scope.download_workTable = function(){
+
+        // 有給数検索
+        let holidayNum = 0;
+        for(obj of $scope.work_table) {
+            if (obj.note.indexOf("有") >= 0) {
+                holidayNum += 1;
+            }
+        }
+
+        let blob = new Blob(
+            [
+                $scope.staff_name, "\r\n",
+                JSON.stringify($scope.work_table), "\r\n",
+                "有給休暇日数: ", holidayNum, "\r\n",
+                "作業合計時間: ", $scope.sumWkTim
+            ], 
+            { type: 'application\/json' });
+        document.getElementById("download").href = window.URL.createObjectURL(blob);
+    }
+
     // サーバに労働時間テーブルを送信する
     $scope.submit_workTable = function() {
         // tableにハッシュキーが入っているため、JSON形式に変換
@@ -238,7 +261,7 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
         let jsonWorkTable = {"name"     : $scope.staff_name, 
                              "post"     : $scope.staff_post,
                              "year"     : $scope.thisYear, 
-                             "month"    : $scope.thisMonth,
+                             "month"    : $scope.thisMonth+1,
                              "table"    : JSON.parse(angular.toJson($scope.work_table))};
         socketio.emit("setReq_work_table_data", jsonWorkTable);
         alert('送信しました');

@@ -27,6 +27,8 @@
     <div ng-controller="WorkTblCtrl">
         <button class="btn_shiftMonth" ng-click="shiftMonth(-1)"> < 前月 </button>
         <button class="btn_shiftMonth" ng-click="shiftMonth(1)"> 次月 > </button>
+        <button class="btn_download" onclick="document.getElementById('download').click()">保存</button>
+        <a id="download" href="#" download="work_table.json" ng-click="download_workTable()" hidden></a>
         <button class="btn_submit" ng-click="submit_workTable()"> 送信 </button>
         <table>
         <tr>
@@ -103,7 +105,7 @@
         <!-- データ -->
         <tr ng-repeat="(index, day_work) in work_table">
             <!-- 日 -->
-            <th ng-style="getholidayStyle(day_work)">{{day_work.month+1}}/{{day_work.day}}</th>
+            <th ng-style="getholidayStyle(day_work)">{{day_work.month}}/{{day_work.day}}</th>
             <!-- 曜日 -->
             <th ng-style="getholidayStyle(day_work)">{{day_work.dayofweek}}</th>
             <!-- 始業時間 -->

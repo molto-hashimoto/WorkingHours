@@ -79,8 +79,14 @@ color: #fff;
     margin: 3px;
     background: #dcdcdc
 }
+.btn_download{
+    position: relative; left: 460px;
+    padding: 0.25em 1.5em;
+    background: #4169e1;/*色*/
+    color: #FFF;   
+}
 .btn_submit{
-    position: relative; left: 540px;
+    position: relative; left: 460px;
     padding: 0.25em 1.5em;
     background: #dc143c;/*色*/
     color: #FFF;
@@ -91,7 +97,8 @@ color: #fff;
     color: #FFF;
 }
 .btn_submit,
-.btn_shiftMonth, 
+.btn_shiftMonth,
+.btn_download,
 .btnSetDef {
     position: relative;
     display: inline-block;

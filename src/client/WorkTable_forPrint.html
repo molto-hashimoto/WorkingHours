@@ -17,6 +17,8 @@
         <select class="select_user" ng-model="selectedUser" ng-options="user for user in userList" ng-change="selectUser()"></select>
         <button class="btn_shiftMonth" ng-click="shiftMonth(-1)"> < 前月 </button>
         <button class="btn_shiftMonth" ng-click="shiftMonth(1)"> 次月 > </button>
+        <button class="btn_download" onclick="document.getElementById('download').click()">保存</button>
+        <a id="download" href="#" download="work_table.json" ng-click="download_workTable()" hidden></a>
 
         <table>
         <tr>
