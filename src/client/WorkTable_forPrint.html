@@ -14,12 +14,14 @@
 <body ng-app="WorkTblApp">
 
     <div ng-controller="WorkTblCtrl">
+        <input type="checkbox" class="chk_lock" checked="{{lock}}" ng-model="lock" ng-change="changeEditLock()">
+        <span class="mark_lock">🔒</span>
         <select class="select_user" ng-model="selectedUser" ng-options="user for user in userList" ng-change="selectUser()"></select>
         <button class="btn_shiftMonth" ng-click="shiftMonth(-1)"> < 前月 </button>
         <button class="btn_shiftMonth" ng-click="shiftMonth(1)"> 次月 > </button>
-        <button class="btn_download" onclick="document.getElementById('download').click()">保存</button>
+        <button class="btn_download" style="left: 400px" onclick="document.getElementById('download').click()">保存</button>
         <a id="download" href="#" download="work_table.json" ng-click="download_workTable()" hidden></a>
-
+        
         <table>
         <tr>
         <td width="300px"><h3>{{thisYear}}年{{thisMonth+1}}月 出勤簿 </h3></td>

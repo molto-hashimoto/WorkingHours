@@ -91,6 +91,9 @@ color: #fff;
     background: #dc143c;/*色*/
     color: #FFF;
 }
+.btn_submit[disabled]{
+    background: #696969;/*色*/
+}
 .btn_shiftMonth{
     padding: 0.25em 0.5em;
     background: #008080;/*色*/
@@ -130,6 +133,9 @@ color: #fff;
 @media print{
     .select_user{display:none;}
     .btn_shiftMonth{display:none;}
+    .chk_lock{display:none;}
+    .mark_lock{display:none;}
+    .btn_download{display:none;}
 }
 @page {
     size: A4;

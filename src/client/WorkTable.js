@@ -23,6 +23,9 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
     // 編集有無フラグ
     $scope.changeFlag = false;
 
+    // ロック状態
+    $scope.lock = false;
+
     // ユーザ名、所属
     $scope.staff_name;
     $scope.staff_post;
@@ -128,6 +131,8 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
         }
         // 月移動したら編集解除
         $scope.changeFlag = false;
+        // ロック状態解除 -> テーブルデータ受信時に再度判定
+        $scope.lock = false;
 
         // 指定された値ずれたDateを取得
         today = new Date($scope.thisYear, $scope.thisMonth + shift, 1);
@@ -210,6 +215,11 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
         $scope.createWorkTable();
     }
 
+    // ロック状態変化
+    $scope.changeEditLock = function() {
+        $scope.submit_workTable($scope.lock, false);
+    }
+
     $scope.post_user = function() {
         // ユーザ名取得
         const request = new XMLHttpRequest();
@@ -232,22 +242,24 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
         request.send();
     }
 
-    // ダウンロード
-    $scope.download_workTable = function(){
-
-        // 有給数検索
-        let holidayNum = 0;
+    // 有給休暇数カウント
+    $scope.countPaidVacation = function(){
+        let count = 0;
         for(obj of $scope.work_table) {
             if (obj.note.indexOf("有") >= 0) {
-                holidayNum += 1;
+                count += 1;
             }
         }
+        return count;
+    }
 
+    // ダウンロード
+    $scope.download_workTable = function(){
         let blob = new Blob(
             [
                 $scope.staff_name, "\r\n",
                 JSON.stringify($scope.work_table), "\r\n",
-                "有給休暇日数: ", holidayNum, "\r\n",
+                "有給休暇日数: ", $scope.countPaidVacation(), "\r\n",
                 "作業合計時間: ", $scope.sumWkTim
             ], 
             { type: 'application\/json' });
@@ -255,16 +267,21 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
     }
 
     // サーバに労働時間テーブルを送信する
-    $scope.submit_workTable = function() {
+    $scope.submit_workTable = function(lock, popup) {
         // tableにハッシュキーが入っているため、JSON形式に変換
         // DB登録用にkeyを付加する
-        let jsonWorkTable = {"name"     : $scope.staff_name, 
-                             "post"     : $scope.staff_post,
-                             "year"     : $scope.thisYear, 
-                             "month"    : $scope.thisMonth+1,
-                             "table"    : JSON.parse(angular.toJson($scope.work_table))};
+        let jsonWorkTable = {"lock"         : lock,
+                             "name"         : $scope.staff_name, 
+                             "post"         : $scope.staff_post,
+                             "year"         : $scope.thisYear, 
+                             "month"        : $scope.thisMonth+1,
+                             "sumWkTim"     : $scope.sumWkTim,
+                             "paidVacation" : $scope.countPaidVacation(),
+                             "table"        : JSON.parse(angular.toJson($scope.work_table))};
         socketio.emit("setReq_work_table_data", jsonWorkTable);
-        alert('送信しました');
+        if (popup) {
+            alert('送信しました');
+        }
         // 編集なし
         $scope.changeFlag = false;
     };
@@ -272,6 +289,11 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
     socketio.on("getRes_date_info", function(tableData) {
 
         if (tableData != undefined) {
+            // ロックされている場合、送信ボタン無効
+            if (tableData.lock) {
+                $scope.lock = tableData.lock;
+            }
+            // テーブル情報上書き
             $scope.work_table = tableData["table"];
             for (let obj of $scope.work_table) {
                 // 文字列→Date型
