@@ -8,7 +8,7 @@ const io = require('socket.io')(http);
 
 // web server  listen
 http.listen(3000, function(){
-  console.log('Server running at http://192.168.1.204:3000/');
+  console.log('Server running at ---');
 });
 
 // web socket connected

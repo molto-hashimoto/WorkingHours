@@ -3,7 +3,6 @@ const WorkTblApp = angular.module('WorkTblApp', []);
 
 // web socket connect
 const socketio = io.connect('http://127.0.0.1:3000');
-//const socketio = io.connect('http://192.168.1.204:3000');
 
 let judgeHoliday;
 

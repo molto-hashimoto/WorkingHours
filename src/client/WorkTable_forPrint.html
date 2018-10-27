@@ -44,7 +44,7 @@
         <!-- データ -->
         <tr ng-repeat="(index, day_work) in work_table">
             <!-- 日 -->
-            <th ng-style="getholidayStyle(day_work.dayofweek)">{{day_work.month+1}}/{{day_work.day}}</th>
+            <th ng-style="getholidayStyle(day_work.dayofweek)">{{day_work.month}}/{{day_work.day}}</th>
             <!-- 曜日 -->
             <th ng-style="getholidayStyle(day_work.dayofweek)">{{day_work.dayofweek}}</th>
             <!-- 始業時間 -->
