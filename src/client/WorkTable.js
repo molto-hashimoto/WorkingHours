@@ -55,6 +55,29 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
     $scope.sumWkTim = 0;
     $scope.numWkDays = 0;
 
+    // その他情報
+    // 有給休暇合計
+    $scope.paidVacation = 0;
+
+    // サーバに有給休暇数の取得要求を送信する
+    $scope.submit_paidVacation = function() {
+        // tableにハッシュキーが入っているため、JSON形式に変換
+        // DB登録用にkeyを付加する
+        let jsonpaidVacation = {"name"         : $scope.staff_name, 
+                                "post"         : $scope.staff_post,
+                                "year"         : $scope.thisYear, 
+                                "month"        : $scope.thisMonth+1};
+        socketio.emit("setReq_sumPaidVacation", jsonpaidVacation);
+    };
+    // 有給時間合計日数取得
+    socketio.on("getRes_sumPaidVacation", function(sumPaidVacation) {
+
+        if (sumPaidVacation != undefined) {
+            $scope.paidVacation = sumPaidVacation;
+            $scope.$apply();
+        }
+    });
+    
     // 労働合計時間計算
     $scope.calcSumWkTim = function(){
         $scope.sumWkTim = 0;
@@ -350,6 +373,8 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
         if (popup) {
             alert('送信しました');
         }
+        //送信後にも有給数更新する
+        $scope.submit_paidVacation();
         // 編集なし
         $scope.changeFlag = false;
     };
@@ -373,6 +398,10 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
             $scope.calcSumWkTim();
             // 外部イベントで$scopeを変更しても反映されないため、強制的に更新。
             $scope.$apply();
+
+            // 有給数更新
+            $scope.submit_paidVacation();                    
+
         }
     });
 
