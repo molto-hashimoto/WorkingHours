@@ -283,6 +283,7 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
         }
         else {
             today.setMinutes(0);
+            today.setHours(today.getHours()+1);
         }
 
         for (let index in $scope.work_table){
@@ -303,7 +304,7 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
 
         // 30分刻みに丸める
         let minu = today.getMinutes();
-        if ((minu > 0) && (minu <= 30)){
+        if ((minu >= 0) && (minu < 30)){
             today.setMinutes(0);
         }
         else {
