@@ -99,8 +99,12 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
         let breakTime = (obj.timBk.getHours() * 60) + obj.timBk.getMinutes();
         workingTime -= breakTime;
         workingTime /= 60;
-        obj.timWk = workingTime;
-
+        if(workingTime >= 0){
+            obj.timWk = workingTime;
+        }
+        else {
+            obj.timWk = 0;
+        }
         // 合計時間計算
         $scope.calcSumWkTim();
     };
