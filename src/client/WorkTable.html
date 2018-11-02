@@ -83,6 +83,11 @@
             <td style="border-style: none;"><input type="time" class="inputTime" step="1800" list="WorkStTimeList" value={{def_timSt}} ng-model="def_timSt"></td>
             <td style="border-style: none;"><input type="time" class="inputTime" step="1800" list="WorkEnTimeList" value={{def_timEn}} ng-model="def_timEn"></td>
             <td style="border-style: none;"><input type="time" class="inputTime" step="1800" list="WorkBkTimeList" value={{def_timBk}} ng-model="def_timBk"></td>
+            <td style="border-style: none;"></td>
+            <td style="border-style: none;">
+                <button class="btn_comming" ng-click="click_btn_comming()", ng-disabled="showingOtherMongth"> 出社 </button>
+                <button class="btn_leaving" ng-click="click_btn_leaving()", ng-disabled="showingOtherMongth"> 退社 </button>
+            </td>
         </tr>
         <tr>
             <td style="border-style: none;"></td>

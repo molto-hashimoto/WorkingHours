@@ -25,6 +25,9 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
     // ロック状態
     $scope.lock = false;
 
+    // 表示画面が今月かどうか
+    $scope.showingOtherMongth = false;
+
     // ユーザ名、所属
     $scope.staff_name;
     $scope.staff_post;
@@ -33,6 +36,11 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
     let today = new Date();
     $scope.thisYear = today.getFullYear();
     $scope.thisMonth = today.getMonth();  // 0-11
+    // 前月、次月ボタンで月が変わるため、ページ表示時の日付を覚えておく
+    $scope.orgThisYear = $scope.thisYear;
+    $scope.orgThisMonth = $scope.thisMonth;
+    $scope.orgThisDay = today.getDate();
+
     // 16日以降は次月を表示
     if (today.getDate() > 15) {
         $scope.thisMonth+=1;
@@ -138,6 +146,15 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
         $scope.thisYear = today.getFullYear();
         $scope.thisMonth = today.getMonth();
         $scope.work_table = [];
+
+        // 表示月が今月か判定
+        if (($scope.thisYear == $scope.orgThisYear) && ($scope.thisMonth == $scope.orgThisMonth)) {
+            $scope.showingOtherMongth = false;
+        }
+        else {
+            $scope.showingOtherMongth = true;
+        }
+
         // テーブル作成
         $scope.createWorkTable();
     };
@@ -250,6 +267,57 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
             }
         }
         return count;
+    }
+
+    // 出社ボタン処理
+    $scope.click_btn_comming = function(){
+    
+        let today = new Date();
+        today.setSeconds(0);
+        today.setMilliseconds(0);
+
+        // 30分刻みに丸める
+        let minu = today.getMinutes();
+        if ((minu > 0) && (minu <= 30)){
+            today.setMinutes(30);
+        }
+        else {
+            today.setMinutes(0);
+        }
+
+        for (let index in $scope.work_table){
+            if ($scope.work_table[index].day == $scope.orgThisDay) {
+                $scope.work_table[index].timSt = today;
+                // 作業時間の計算
+                $scope.wrap_calcWkTim(index);
+                break;
+            }   
+        }
+    }
+
+    // 退社ボタン処理
+    $scope.click_btn_leaving = function(){
+        let today = new Date();
+        today.setSeconds(0);
+        today.setMilliseconds(0);
+
+        // 30分刻みに丸める
+        let minu = today.getMinutes();
+        if ((minu > 0) && (minu <= 30)){
+            today.setMinutes(0);
+        }
+        else {
+            today.setMinutes(30);
+        }
+
+        for (let index in $scope.work_table){
+            if ($scope.work_table[index].day == $scope.orgThisDay) {
+                $scope.work_table[index].timEn = today;
+                // 作業時間の計算
+                $scope.wrap_calcWkTim(index);
+                break;
+            }   
+        }
     }
 
     // ダウンロード
