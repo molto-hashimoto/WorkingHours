@@ -86,15 +86,27 @@ io.sockets.on("connection", function (socket) {
     }
     query = {
       'name': dateInfo['name'], 
-      $or:[{'year': selectYear1, 'month': {$gte: 10}},{'year': selectYear2, 'month': {$lte: 9}}]
+      $or:[{'year': selectYear1, 'month': {$gte: 10}},{'year': selectYear2, 'month': {$lte: 10}}]
     }
 
     getMongoObj().collection('workTable').find(query).toArray(function(error, documents) {
       assert.equal(error, null);
       let sumPaidVacation = 0;
+      let target;
 
       for(obj of documents) {
-        sumPaidVacation = sumPaidVacation + obj['paidVacation'];
+        for (dayObj of obj.table) {
+          target = true;
+          if ((dayObj.year == selectYear1) && (dayObj.month == 9)) {
+            target = false;
+          }
+          if ((dayObj.year == selectYear2) && (dayObj.month == 10)) {
+            target = false;
+          }
+          if ((target == true) && (dayObj.holidayType == "有給休暇")) {
+            sumPaidVacation++;
+          }
+        }
       }
 
       socket.emit("getRes_sumPaidVacation", sumPaidVacation);
