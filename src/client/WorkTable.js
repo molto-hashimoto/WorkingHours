@@ -153,6 +153,9 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
         socketio.emit("getReq_date_info", {"name" : $scope.staff_name,
                                     "year" : $scope.thisYear, 
                                     "month" : $scope.thisMonth+1});
+
+        // 有給数更新する
+        $scope.submit_paidVacation();
     };
 
     // 月移動
@@ -421,10 +424,6 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
             $scope.calcSumWkTim();
             // 外部イベントで$scopeを変更しても反映されないため、強制的に更新。
             $scope.$apply();
-
-            // 有給数更新
-            $scope.submit_paidVacation();                    
-
         }
     });
 

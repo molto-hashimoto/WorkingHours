@@ -111,7 +111,7 @@ color: #fff;
     width : 90px;
 }
 .btn_download{
-    position: relative; left: 0px;
+    position: relative; left: -2px;
     padding: 0.25em 1.5em;
     background: #4169e1;/*色*/
     color: #FFF;
@@ -119,7 +119,7 @@ color: #fff;
     width : 90px;
 }
 .btn_submit{
-    position: relative; left: 10px;
+    position: relative; left: 6px;
     padding: 0.25em 1.5em;
     background: #ff4500;/*色*/
     color: #FFF;
