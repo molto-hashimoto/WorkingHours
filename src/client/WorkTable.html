@@ -27,9 +27,17 @@
     <div ng-controller="WorkTblCtrl">
         <button class="btn_shiftMonth" ng-click="shiftMonth(-1)"> < 前月 </button>
         <button class="btn_shiftMonth" ng-click="shiftMonth(1)"> 次月 > </button>
-        <button class="btn_download" onclick="document.getElementById('download').click()">保存</button>
-        <a id="download" href="#" download="work_table.json" ng-click="download_workTable()" hidden></a>
-        <button class="btn_submit" ng-click="submit_workTable(false, true)" ng-disabled="lock"> 送信 </button>
+        <span class="line_box">
+            <button class="btn_comming" ng-click="click_btn_comming()", 
+                ng-disabled="showingOtherMongth"> 出社 </button>
+            <button class="btn_leaving" ng-click="click_btn_leaving()", 
+                ng-disabled="showingOtherMongth"> 退社 </button>
+        </span>
+        <span class="line_box">
+            <button class="btn_download" onclick="document.getElementById('download').click()">保存</button>
+            <a id="download" href="#" download="work_table.json" ng-click="download_workTable()" hidden></a>
+            <button class="btn_submit" ng-click="submit_workTable(false, true)" ng-disabled="lock"> 送信 </button>
+        </span>
         <table>
         <tr>
         <td width="400px"><h3>{{thisYear}}年{{thisMonth+1}}月 出勤簿 </h3></td>
@@ -83,12 +91,6 @@
             <td style="border-style: none;"><input type="time" class="inputTime" step="1800" list="WorkStTimeList" value={{def_timSt}} ng-model="def_timSt"></td>
             <td style="border-style: none;"><input type="time" class="inputTime" step="1800" list="WorkEnTimeList" value={{def_timEn}} ng-model="def_timEn"></td>
             <td style="border-style: none;"><input type="time" class="inputTime" step="1800" list="WorkBkTimeList" value={{def_timBk}} ng-model="def_timBk"></td>
-            <td style="border-style: none;"></td>
-            <td style="border-style: none;"></td>
-            <td style="border-style: none;">
-                <button class="btn_comming" ng-click="click_btn_comming()", ng-disabled="showingOtherMongth"> 出社 </button>
-                <button class="btn_leaving" ng-click="click_btn_leaving()", ng-disabled="showingOtherMongth"> 退社 </button>
-            </td>
         </tr>
         <tr>
             <td style="border-style: none;"></td>
@@ -157,7 +159,7 @@
         <!-- その他情報表追加 -->
         <br>
         <table class="WorkTblTb">
-            <tr><th>取得有給合計</th></tr>
+            <tr><th>合計有給取得数</th></tr>
             <tr><td align="right">{{paidVacation}}</td></tr>
         </table>
     </div>

@@ -74,6 +74,20 @@ background-color: #2f4f4f;
 color: #fff;
 }
 
+.line_box {
+    padding: 0.5em 1em;
+    margin: 2em 0;
+    color: #474747;
+    background: whitesmoke;/*背景色*/
+    border-left: double 7px #4ec4d3;/*左線*/
+    border-right: double 7px #4ec4d3;/*右線*/
+    position: relative; left: 240px;
+}
+.line_box p {
+    margin: 0; 
+    padding: 0;
+}
+
 /* 前月/次月ボタン、初期値設定ボタン */
 .btnSetDef {
     margin: 3px;
@@ -81,28 +95,36 @@ color: #fff;
 }
 
 .btn_comming{
-    position: relative; left: 60px;
+    position: relative; left: 0px;
     padding: 0.25em 1.5em;
-    background: #008000;/*色*/
+    background: #ff8c00;/*色*/
     color: #FFF; 
+    height: 40px;
+    width : 90px;
 }
 .btn_leaving {
-    position: relative; left: 60px;
+    position: relative; left: 10px;
     padding: 0.25em 1.5em;
-    background: #008000;/*色*/
-    color: #FFF; 
+    background: #00008b;/*色*/
+    color: #FFF;
+    height: 40px;
+    width : 90px;
 }
 .btn_download{
-    position: relative; left: 550px;
+    position: relative; left: 0px;
     padding: 0.25em 1.5em;
     background: #4169e1;/*色*/
-    color: #FFF;   
+    color: #FFF;
+    height: 40px;
+    width : 90px;
 }
 .btn_submit{
-    position: relative; left: 550px;
+    position: relative; left: 10px;
     padding: 0.25em 1.5em;
-    background: #dc143c;/*色*/
+    background: #ff4500;/*色*/
     color: #FFF;
+    height: 40px;
+    width : 90px;
 }
 .btn_shiftMonth{
     padding: 0.25em 0.5em;
@@ -156,11 +178,12 @@ color: #fff;
 }
 
 @media print{
-    .select_user{display:none;}
-    .btn_shiftMonth{display:none;}
-    .chk_lock{display:none;}
-    .mark_lock{display:none;}
-    .btn_download{display:none;}
+    .hidden-print {
+        display: none;
+    }
+    .content-print{
+        zoom: 95%;
+    }
 }
 @page {
     size: A4;

@@ -84,7 +84,7 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
         $scope.numWkDays = 0;
         for(obj of $scope.work_table) {
             $scope.sumWkTim += obj.timWk;
-            if (obj.timWk > 0){
+            if ((obj.timWk > 0) && (obj.holidayType != "有給休暇") && (obj.holidayType != "忌引")){
                 $scope.numWkDays += 1;
             }
         }
@@ -373,6 +373,7 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
                 $scope.staff_name, "\r\n",
                 JSON.stringify($scope.work_table), "\r\n",
                 "有給休暇日数: ", $scope.countPaidVacation(), "\r\n",
+                "合計有給取得数: ", $scope.paidVacation, "\r\n",
                 "作業合計時間: ", $scope.sumWkTim
             ], 
             { type: 'application\/json' });

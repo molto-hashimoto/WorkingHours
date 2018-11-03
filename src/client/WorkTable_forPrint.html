@@ -14,6 +14,7 @@
 <body ng-app="WorkTblApp">
 
     <div ng-controller="WorkTblCtrl">
+        <span class="hidden-print">
         <input type="checkbox" class="chk_lock" checked="{{lock}}" ng-model="lock" ng-change="changeEditLock()">
         <span class="mark_lock">🔒</span>
         <select class="select_user" ng-model="selectedUser" ng-options="user for user in userList" ng-change="selectUser()"></select>
@@ -21,10 +22,12 @@
         <button class="btn_shiftMonth" ng-click="shiftMonth(1)"> 次月 > </button>
         <button class="btn_download" style="left: 400px" onclick="document.getElementById('download').click()">保存</button>
         <a id="download" href="#" download="work_table.json" ng-click="download_workTable()" hidden></a>
-        
+        </span>
+
+        <span class="content-print">
         <table>
         <tr>
-        <td width="300px"><h3>{{thisYear}}年{{thisMonth+1}}月 出勤簿 </h3></td>
+        <td width="400px"><h3>{{thisYear}}年{{thisMonth+1}}月 出勤簿 </h3></td>
         <td width="200px"><label style="font-weight: bold">氏名 : {{staff_name}}</label></td>
         <td width="300px"><label style="font-weight: bold">所属 : {{staff_post}}</label></td>
         </tr>
@@ -39,14 +42,15 @@
             <th>終業時間</th>
             <th>休憩時間</th>
             <th>労働時間</th>
+            <th>休暇</th>
             <th>備考</th>
         </tr>
         <!-- データ -->
         <tr ng-repeat="(index, day_work) in work_table">
             <!-- 日 -->
-            <th ng-style="getholidayStyle(day_work.dayofweek)">{{day_work.month}}/{{day_work.day}}</th>
+            <th ng-style="getholidayStyle(day_work)">{{day_work.month}}/{{day_work.day}}</th>
             <!-- 曜日 -->
-            <th ng-style="getholidayStyle(day_work.dayofweek)">{{day_work.dayofweek}}</th>
+            <th ng-style="getholidayStyle(day_work)">{{day_work.dayofweek}}</th>
             <!-- 始業時間 -->
             <td><input type="time" readonly class="inputTime" step="1800" list="WorkStTimeList"
                 value="{{work_table[index].timSt}}" ng-model="work_table[index].timSt" ng-change="calcWkTim(index)"></td>
@@ -60,8 +64,18 @@
             <td><input type="text" readonly class="inputTime" 
                 value="{{work_table[index].timWk}}" readonly>
             </td>
+            <td width="90">
+                <select name="holidayType" style="width:100%;border:1px;-webkit-appearance: none;" 
+                    ng-model="work_table[index].holidayType" ng-change="selectHolidayType(index)" disabled>
+                    <option value=""></option>
+                    <option value="休日出勤">休日出勤</option>
+                    <option value="休暇">休暇</option>
+                    <option value="有給休暇">有給休暇</option>
+                    <option value="忌引">忌引</option>
+                </select>
+            </td>
             <!-- 備考 -->
-            <td><input type="text" readonly style="width:200px" maxlength="20" value="{{day_work.note}}" ng-model="day_work.note"></td>
+            <td><input type="text" readonly style="width:200px; height:20px" maxlength="20" value="{{day_work.note}}" ng-model="day_work.note"></td>
         </tr>
         <!-- 合計労働時間 -->
         <tr>
@@ -71,9 +85,11 @@
             <td class="disableCell"></td>
             <td class="disableCell"></td>
             <td style="font-size: 18px; text-align:right">{{sumWkTim}}</td>
+            <td style="font-size: 18px; text-align:right">{{countPaidVacation()}}</td>
             <td style="font-size: 18px; text-align:right">勤務日数 : {{numWkDays}}</td>
         </tr>
         </table>
+        </span>
     </div>
     
 </body>
