@@ -32,7 +32,7 @@
         <button class="btn_submit" ng-click="submit_workTable(false, true)" ng-disabled="lock"> 送信 </button>
         <table>
         <tr>
-        <td width="300px"><h3>{{thisYear}}年{{thisMonth+1}}月 出勤簿 </h3></td>
+        <td width="400px"><h3>{{thisYear}}年{{thisMonth+1}}月 出勤簿 </h3></td>
         <td width="200px"><label style="font-weight: bold">氏名 : {{staff_name}}</label></td>
         <td width="300px"><label style="font-weight: bold">所属 : {{staff_post}}</label></td>
         </tr>
@@ -84,6 +84,7 @@
             <td style="border-style: none;"><input type="time" class="inputTime" step="1800" list="WorkEnTimeList" value={{def_timEn}} ng-model="def_timEn"></td>
             <td style="border-style: none;"><input type="time" class="inputTime" step="1800" list="WorkBkTimeList" value={{def_timBk}} ng-model="def_timBk"></td>
             <td style="border-style: none;"></td>
+            <td style="border-style: none;"></td>
             <td style="border-style: none;">
                 <button class="btn_comming" ng-click="click_btn_comming()", ng-disabled="showingOtherMongth"> 出社 </button>
                 <button class="btn_leaving" ng-click="click_btn_leaving()", ng-disabled="showingOtherMongth"> 退社 </button>
@@ -105,6 +106,7 @@
             <th>終業時間</th>
             <th>休憩時間</th>
             <th>労働時間</th>
+            <th>休暇</th>
             <th>備考</th>
         </tr>
         <!-- データ -->
@@ -126,8 +128,18 @@
             <td><input type="text" class="inputTime" 
                 value="{{work_table[index].timWk}}" readonly>
             </td>
+            <td width="90">
+                <select name="holidayType" style="width:100%;border:1px;-webkit-appearance: none;" 
+                    ng-model="work_table[index].holidayType" ng-change="selectHolidayType(index)">
+                    <option value=""></option>
+                    <option value="休日出勤">休日出勤</option>
+                    <option value="休暇">休暇</option>
+                    <option value="有給休暇">有給休暇</option>
+                    <option value="忌引">忌引</option>
+                </select>
+            </td>
             <!-- 備考 -->
-            <td><input type="text" style="width:200px" maxlength="20" value="{{day_work.note}}" ng-model="day_work.note" ng-change="wrap_calcWkTim(index)"></td>
+            <td><input type="text" style="width:200px; height:20px" maxlength="20" value="{{day_work.note}}" ng-model="day_work.note" ng-change="wrap_calcWkTim(index)"></td>
         </tr>
         <!-- 合計労働時間 -->
         <tr>
@@ -137,21 +149,17 @@
             <td class="disableCell"></td>
             <td class="disableCell"></td>
             <td style="font-size: 18px; text-align:right">{{sumWkTim}}</td>
+            <td style="font-size: 18px; text-align:right">{{countPaidVacation()}}</td>
             <td style="font-size: 18px; text-align:right">勤務日数 : {{numWkDays}}</td>
         </tr>
         </table>
 
         <!-- その他情報表追加 -->
         <br>
-        <table width="120" border="0" cellspacing="1" bgcolor="#000000">
-        <tr>
-        <th bgcolor="#ffffff"><font color="#000000">取得有給合計</font></th>
-        </tr>
-        <tr>
-        <td align="right" bgcolor="#ffffff"><font color="#000000">{{paidVacation}}</font></td>
-        </tr>
-        </table>    
-    
+        <table class="WorkTblTb">
+            <tr><th>取得有給合計</th></tr>
+            <tr><td align="right">{{paidVacation}}</td></tr>
+        </table>
     </div>
     </div>
     </div>

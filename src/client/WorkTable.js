@@ -2,7 +2,7 @@
 const WorkTblApp = angular.module('WorkTblApp', []);
 
 // web socket connect
-const socketio = io.connect('http://127.0.0.1:3000');
+const socketio = io.connect('http://127.0.0.1:80');
 
 let judgeHoliday;
 
@@ -35,7 +35,7 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
     // 年月設定
     let today = new Date();
     $scope.thisYear = today.getFullYear();
-    $scope.thisMonth = today.getMonth();  // 0-11
+    $scope.thisMonth = today.getMonth();  // 0-11 処理上はそのまま使うが、サーバに送信する際は+1する
     // 前月、次月ボタンで月が変わるため、ページ表示時の日付を覚えておく
     $scope.orgThisYear = $scope.thisYear;
     $scope.orgThisMonth = $scope.thisMonth;
@@ -131,6 +131,7 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
                 timSt       : new Date(year, month, dayCnt),         // 始業時間
                 timEn       : new Date(year, month, dayCnt),         // 終業時間
                 timBk       : new Date(year, month, dayCnt),         // 休憩時間
+                holidayType : "",                   // 休暇種別
                 note        : ""                    // 備考
                 });
             $scope.calcWkTim($scope.work_table.length-1);
@@ -289,11 +290,28 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
     $scope.countPaidVacation = function(){
         let count = 0;
         for(obj of $scope.work_table) {
-            if (obj.note.indexOf("有") >= 0) {
+            if (obj.holidayType == "有給休暇") {
                 count += 1;
             }
         }
         return count;
+    }
+    // 休暇種別選択時処理
+    $scope.selectHolidayType = function(index){
+        
+        let obj = $scope.work_table[index];
+
+        if((obj.holidayType == "有給休暇") || (obj.holidayType == "忌引")){
+            obj.timSt.setHours(9, 0, 0);
+            obj.timEn.setHours(18, 0, 0);
+            obj.timBk.setHours(1, 0, 0);
+
+            obj.timSt = new Date(obj.timSt);
+            obj.timEn = new Date(obj.timEn);
+            obj.timBk = new Date(obj.timBk);
+        }
+        // 作業時間の計算
+        $scope.wrap_calcWkTim(index);
     }
 
     // 出社ボタン処理

@@ -7,7 +7,7 @@ const http = require('http').Server(app);
 const io = require('socket.io')(http);
 
 // web server  listen
-http.listen(3000, function(){
+http.listen(80, function(){
   console.log('Server running at ---');
 });
 
