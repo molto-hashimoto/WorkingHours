@@ -4,8 +4,7 @@
 <meta charset="utf-8">
 <meta name="robots" content="noindex,nofollow">
 <link rel="stylesheet" type="text/css" href="WorkTable.css">
-<link rel="stylesheet" type="text/css" href="WorkTable_sub.css"
-    media="screen and (max-width: 900px)">
+
 <title>出勤簿</title>
 <script src="angular.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
@@ -137,9 +136,9 @@
                     ng-model="work_table[index].holidayType" ng-change="selectHolidayType(index)">
                     <option value=""></option>
                     <option value="休日出勤">休日出勤</option>
-                    <option value="休暇">休暇</option>
+                    <option value="無給休暇">無給休暇</option>
                     <option value="有給休暇">有給休暇</option>
-                    <option value="忌引">忌引</option>
+                    <option value="特別休暇">特別休暇</option>
                 </select>
             </td>
             <!-- 備考 -->

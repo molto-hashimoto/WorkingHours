@@ -3,6 +3,7 @@ const WorkTblApp = angular.module('WorkTblApp', []);
 
 // web socket connect
 const socketio = io.connect('http://127.0.0.1:80');
+//const socketio = io.connect('http://150.95.149.145:80');
 
 let judgeHoliday;
 
@@ -304,7 +305,7 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
         
         let obj = $scope.work_table[index];
 
-        if((obj.holidayType == "有給休暇") || (obj.holidayType == "忌引")){
+        if((obj.holidayType == "有給休暇") || (obj.holidayType == "特別休暇")){
             obj.timSt.setHours(9, 0, 0);
             obj.timEn.setHours(18, 0, 0);
             obj.timBk.setHours(1, 0, 0);
@@ -313,6 +314,17 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
             obj.timEn = new Date(obj.timEn);
             obj.timBk = new Date(obj.timBk);
         }
+        else if(obj.holidayType == "無給休暇") {
+            obj.timSt.setHours(0, 0, 0);
+            obj.timEn.setHours(0, 0, 0);
+            obj.timBk.setHours(0, 0, 0);
+
+            obj.timSt = new Date(obj.timSt);
+            obj.timEn = new Date(obj.timEn);
+            obj.timBk = new Date(obj.timBk);
+        }
+        else {}        
+
         // 作業時間の計算
         $scope.wrap_calcWkTim(index);
     }
