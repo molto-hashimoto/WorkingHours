@@ -393,6 +393,8 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
             ], 
             { type: 'application\/json' });
         document.getElementById("download").href = window.URL.createObjectURL(blob);
+        document.getElementById("download").download = 
+            String($scope.thisYear) + ('00' + ($scope.thisMonth+1)).slice(-2) + "_" + $scope.staff_name + ".json";
     }
 
     // サーバに労働時間テーブルを送信する
