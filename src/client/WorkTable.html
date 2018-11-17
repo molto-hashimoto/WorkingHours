@@ -9,6 +9,7 @@
 <script src="angular.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="require.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.min.js"></script>
 <script src="WorkTable.js"></script>
 </head>
 
@@ -19,6 +20,9 @@
     <input id="tab_WorkTbl" type="radio" name="tab_item" checked>
     <label class="tab_item" for="tab_WorkTbl">出勤簿</label>
     <!-- タブ2 -->
+    <input id="tab_graph" type="radio" name="tab_item">
+    <label class="tab_item" for="tab_graph">統計</label>
+    <!-- タブ3 -->
     <input id="tab_schedule" type="radio" name="tab_item">
     <label class="tab_item" for="tab_schedule">スケジュール</label>
 
@@ -166,10 +170,18 @@
     </div>
     </div>
     </div>
+
+    <div class="tab_content" id="content_graph">
+    <div class="tab_content_description" ng-controller="graphCtrl">
+            <!-- タブ2内コンテンツ -->
+            <canvas id="graph_canvas"></canvas>
+    </div>
+    </div>
     
     <div class="tab_content" id="content_schedule">
-    <div class="tab_content_description">
-    <!-- タブ2内コンテンツ -->
+    <div class="tab_content_description" ng-controller="scheduleCtrl">
+        <!-- タブ3内コンテンツ -->
+
     </div>
     </div>
 </body>

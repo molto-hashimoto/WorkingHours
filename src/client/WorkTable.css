@@ -65,6 +65,7 @@ overflow: hidden;
 }
 /*選択されているタブのコンテンツのみを表示*/
 #tab_WorkTbl:checked ~ #content_WorkTbl,
+#tab_graph:checked ~ #content_graph,
 #tab_schedule:checked ~ #content_schedule {
 display: block;
 }

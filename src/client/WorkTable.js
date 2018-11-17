@@ -466,3 +466,41 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
         console.log(err);
     });
 }]);
+
+WorkTblApp.controller('graphCtrl', ['$scope', function ($scope) {
+    //「月別データ」
+    var mydata = {
+        labels: ["１月", "２月", "３月", "４月", "５月", "６月", "７月"],
+        datasets: [
+        {
+            label: '数量',
+            data: [65, 59, 80, 81, 56, 55, 48],
+            lineTension: 0,
+        },
+        {
+            label: '価格',
+            data: [20, 22, 18, 12, 25, 28, 22],
+            lineTension: 0,
+        }
+        ]
+      };
+  
+    //「オプション設定」
+    var options = {
+        title: {    
+        display: true,
+        text: 'サンプルチャート'
+        }
+    };
+  
+    var canvas = document.getElementById('graph_canvas');
+    var chart = new Chart(canvas, {
+        type: 'line',  //グラフの種類
+        data: mydata,  //表示するデータ
+        options: options  //オプション設定
+    });
+}]);
+
+WorkTblApp.controller('scheduleCtrl', ['$scope', function ($scope) {
+
+}]);
