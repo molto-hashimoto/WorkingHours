@@ -114,5 +114,17 @@ router.get('/print', function(req, res) {
 		res.redirect('/');
 	}
 });
+router.get('/calendar', function(req, res) {
+	// カレンダーページ返却
+	const fullPath = __dirname + '/client/calendar.html';
+	res.writeHead(200, {"Content-Type": mime[path.extname(fullPath)] || "text/plain"});
+	fs.readFile(fullPath, function(err, data) {
+		if (err) {
+			res.send('page read error');
+		} else {
+			res.end(data, 'UTF-8');
+		}
+	});
+});
 
 module.exports = router;
