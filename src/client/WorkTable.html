@@ -40,6 +40,8 @@
             ng-model="input_state" ng-options="state for state in input_state_list"></select>
             <button class="btn_submit" ng-click="wrap_submit_workTable()" ng-disabled="lock"> 送信 </button>
         </span>
+        <hr style="border-top: 3px double #bbb;">
+        <div style="width:950px;height:700px;overflow:auto;">
         <table>
         <tr>
         <td width="400px"><h3>{{thisYear}}年{{thisMonth+1}}月 出勤簿 </h3></td>
@@ -164,6 +166,7 @@
             <tr><th>合計有給取得数</th></tr>
             <tr><td align="right">{{paidVacation}}</td></tr>
         </table>
+    </div>
     </div>
     </div>
     </div>
