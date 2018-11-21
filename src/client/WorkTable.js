@@ -26,6 +26,12 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
     // ロック状態
     $scope.lock = false;
 
+    // 入力状態
+    const INPUT_STATE_INCOMP = '入力中';
+    const INPUT_STATE_COMP = '入力完了';
+    $scope.input_state = INPUT_STATE_INCOMP;
+    $scope.input_state_list = [INPUT_STATE_INCOMP, INPUT_STATE_COMP];
+
     // 表示画面が今月かどうか
     $scope.showingOtherMongth = false;
 
@@ -37,15 +43,16 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
     let today = new Date();
     $scope.thisYear = today.getFullYear();
     $scope.thisMonth = today.getMonth();  // 0-11 処理上はそのまま使うが、サーバに送信する際は+1する
-    // 前月、次月ボタンで月が変わるため、ページ表示時の日付を覚えておく
-    $scope.orgThisYear = $scope.thisYear;
-    $scope.orgThisMonth = $scope.thisMonth;
-    $scope.orgThisDay = today.getDate();
 
     // 16日以降は次月を表示
     if (today.getDate() > 15) {
         $scope.thisMonth+=1;
     }
+    // 前月、次月ボタンで月が変わるため、ページ表示時の日付を覚えておく
+    $scope.orgThisYear = $scope.thisYear;
+    $scope.orgThisMonth = $scope.thisMonth;
+    $scope.orgThisDay = today.getDate();
+
     // 各時間初期値
     $scope.def_timSt = new Date($scope.thisYear, $scope.thisMonth);
     $scope.def_timEn = new Date($scope.thisYear, $scope.thisMonth);
@@ -172,6 +179,7 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
         $scope.changeFlag = false;
         // ロック状態解除 -> テーブルデータ受信時に再度判定
         $scope.lock = false;
+        $scope.input_state = INPUT_STATE_INCOMP;
 
         // 指定された値ずれたDateを取得
         today = new Date($scope.thisYear, $scope.thisMonth + shift, 1);
@@ -266,6 +274,22 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
     // ロック状態変化
     $scope.changeEditLock = function() {
         $scope.submit_workTable($scope.lock, false);
+    }
+
+    // 通常送信
+    $scope.wrap_submit_workTable = function() {
+        let lock = false;
+        if ($scope.input_state == INPUT_STATE_COMP){
+            lock = true;
+            // 確認
+            if (window.confirm('以降の変更が送信ができなくなります。よろしいですか？') == false) {
+                return;
+            }
+            // 送信ボタン無効化
+            $scope.lock = true;
+
+        }
+        $scope.submit_workTable(lock, true);
     }
 
     $scope.post_user = function() {
@@ -425,6 +449,9 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
             // ロックされている場合、送信ボタン無効
             if (tableData.lock) {
                 $scope.lock = tableData.lock;
+                if (tableData.lock == true) {
+                    $scope.input_state = INPUT_STATE_COMP;
+                }
             }
             // テーブル情報上書き
             $scope.work_table = tableData["table"];

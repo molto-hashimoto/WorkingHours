@@ -177,6 +177,54 @@ color: #fff;
     background: #556b2f; 
 }
 
+.select_input_state {
+	overflow: hidden;
+	width: 80px;
+	margin: 2em auto;
+    text-align: center;
+}
+.select_input_state select {
+	width: 80px;
+	padding-right: 1em;
+	cursor: pointer;
+	text-indent: 0.01px;
+	text-overflow: ellipsis;
+	border: none;
+	outline: none;
+	background: transparent;
+	background-image: none;
+	box-shadow: none;
+	-webkit-appearance: none;
+    appearance: none;
+}
+.select_input_state select::-ms-expand {
+    display: none;
+}
+.select_input_state.cp_sl04 {
+	position: relative;
+	border: 5px solid #ff7f50;
+    border-radius: 3px;
+    background: #ff7f50;   
+    color: #fff; 
+}
+.select_input_state.cp_sl04::before {
+	position: absolute;
+	top: 0.8em;
+	right: 0.8em;
+	width: 0;
+	height: 0;
+	padding: 0;
+	content: '';
+	border-left: 6px solid transparent;
+	border-right: 6px solid transparent;
+	border-top: 6px solid #ff6347;
+	pointer-events: none;
+}
+.select_input_state.cp_sl04 select {
+	padding: 8px 38px 8px 8px;
+	color: #ff6347;
+}
+
 @media print{
     .hidden-print {
         display: none;

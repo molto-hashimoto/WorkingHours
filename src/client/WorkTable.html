@@ -36,9 +36,9 @@
                 ng-disabled="showingOtherMongth"> 退社 </button>
         </span>
         <span class="line_box">
-            <button class="btn_download" onclick="document.getElementById('download').click()">保存</button>
-            <a id="download" href="#" download="#" ng-click="download_workTable()" hidden></a>
-            <button class="btn_submit" ng-click="submit_workTable(false, true)" ng-disabled="lock"> 送信 </button>
+            <select class="select_input_state cp_sl04" style="font-size: 12px;" 
+            ng-model="input_state" ng-options="state for state in input_state_list"></select>
+            <button class="btn_submit" ng-click="wrap_submit_workTable()" ng-disabled="lock"> 送信 </button>
         </span>
         <table>
         <tr>
