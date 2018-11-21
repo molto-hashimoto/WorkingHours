@@ -467,4 +467,8 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
     }).catch(function(err){
         console.log(err);
     });
+
+    $scope.click_calendar = function() {
+        window.open('calendar', null, 'width=900,height=1200');
+    }
 }]);

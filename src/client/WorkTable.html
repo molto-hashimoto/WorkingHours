@@ -28,6 +28,7 @@
     <div ng-controller="WorkTblCtrl">
         <button class="btn_shiftMonth" ng-click="shiftMonth(-1)"> < 前月 </button>
         <button class="btn_shiftMonth" ng-click="shiftMonth(1)"> 次月 > </button>
+        <a href="" style="position: relative; left: 10px;" ng-click="click_calendar()">カレンダー</a>
         <span class="line_box">
             <button class="btn_comming" ng-click="click_btn_comming()", 
                 ng-disabled="showingOtherMongth"> 出社 </button>
