@@ -36,6 +36,23 @@ io.sockets.on("connection", function (socket) {
     });
   });
 
+  // 全ユーザの指定年月勤怠要求
+  socket.on("getReq_date_info_all", function(dateInfo){
+    // 受信した情報に一致するデータをmongoDBから取得 -> 送信
+    query = {
+      'year': dateInfo['year'], 
+      'month': dateInfo['month']
+    }
+    getMongoObj().collection('workTable').find(query).toArray(function(error, documents) {
+      assert.equal(error, null);
+      console.log(documents);
+      // 該当勤怠データなしの場合も送信する
+//      if (documents.length != 0) {
+        socket.emit("getRes_date_info_all", documents);
+//      }
+    });
+  });
+
   // 労働時間テーブル受信処理
   socket.on("setReq_work_table_data", function (workTableData) {
     console.log(workTableData);

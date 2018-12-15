@@ -225,6 +225,10 @@ color: #fff;
 	color: #ff6347;
 }
 
+.hidden-print {
+    width:350px;
+    float: left;
+}
 @media print{
     .hidden-print {
         display: none;

@@ -16,6 +16,7 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
     $scope.OBJ_MEMBER_TIM_EN = 3;
     $scope.OBJ_MEMBER_TIM_BK = 4;
 
+    $scope.userWorkTblList = [];
     $scope.userInfoList = [];
     $scope.userList = [];
     $scope.selectedUser;
@@ -27,6 +28,7 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
     $scope.lock = false;
 
     // 入力状態
+    const INPUT_NOTHING = '';
     const INPUT_STATE_INCOMP = '入力中';
     const INPUT_STATE_COMP = '入力完了';
     $scope.input_state = INPUT_STATE_INCOMP;
@@ -166,6 +168,18 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
         $scope.submit_paidVacation();
     };
 
+    // 全ユーザの勤怠データ取得メッセージ送信
+    $scope.sendMsg_getAllWorkTable = function() {
+        socketio.emit("getReq_date_info_all", {"year" : $scope.thisYear, 
+        "month" : $scope.thisMonth+1});
+    }
+    // 管理画面用　月移動ラップ関数
+    $scope.wrap_shiftMonth = function(shift) {
+        $scope.shiftMonth(shift);
+        // 今月の全ユーザ勤怠データ取得
+        $scope.sendMsg_getAllWorkTable();
+    }
+
     // 月移動
     $scope.shiftMonth = function(shift){
 
@@ -271,9 +285,44 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
         $scope.createWorkTable();
     }
 
+    // 勤怠表示ボタン押下処理
+    $scope.click_btn_Show = function(index) {
+
+        // ユーザ変更
+        $scope.staff_name = $scope.userInfoList[index].name;
+        $scope.staff_post = $scope.userInfoList[index].post;
+
+        // $scope.userWorkTblListから該当データ検索
+        let workTbl = $scope.userWorkTblList.filter(function(item, index){
+            if (item.name == $scope.staff_name) return true;
+        });
+        $scope.work_table = [];
+        if (workTbl.length > 0) {
+            // 勤怠データ設定
+            $scope.workTblSet(workTbl[0]);
+        }
+    }
+    // 保存ボタン押下処理
+    $scope.click_btn_Save = function(index) {
+
+        // テーブル情報を更新する。(ダウンロード内容（ユーザ、勤怠データ）更新のため)
+        $scope.click_btn_Show(index);
+        // ダウンロード
+        $scope.download_workTable(index);
+    }
+
     // ロック状態変化
-    $scope.changeEditLock = function() {
-        $scope.submit_workTable($scope.lock, false);
+    $scope.changeEditLock = function(index) {
+
+        // テーブル情報を更新する。(ダウンロード内容（ユーザ、勤怠データ）更新のため)
+        $scope.click_btn_Show(index);
+
+        let lock = true;
+        if ($scope.userInfoList[index].input_state == INPUT_STATE_INCOMP) {
+            // 入力中 -> ロックなし
+            lock = false;
+        }
+        $scope.submit_workTable(lock, false);
     }
 
     // 通常送信
@@ -405,8 +454,12 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
         }
     }
 
-    // ダウンロード
+    // ダウンロード ※$scope.work_tableに保存対象の勤怠が設定されている必要がある。
     $scope.download_workTable = function(){
+
+        // ダウンロードリンクを生成
+        let link = document.createElement('a');
+
         let blob = new Blob(
             [
                 $scope.staff_name, "\r\n",
@@ -416,9 +469,12 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
                 "作業合計時間: ", $scope.sumWkTim
             ], 
             { type: 'application\/json' });
-        document.getElementById("download").href = window.URL.createObjectURL(blob);
-        document.getElementById("download").download = 
-            String($scope.thisYear) + ('00' + ($scope.thisMonth+1)).slice(-2) + "_" + $scope.staff_name + ".json";
+            
+        // ダウンロードに必要なパラメータ設定
+        link.href = window.URL.createObjectURL(blob);
+        link.download = String($scope.thisYear) + ('00' + ($scope.thisMonth+1)).slice(-2) + "_" + $scope.staff_name + ".json";
+        // ダウンロードリンクをクリックする。
+        link.click();
     }
 
     // サーバに労働時間テーブルを送信する
@@ -442,8 +498,9 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
         // 編集なし
         $scope.changeFlag = false;
     };
-    // 労働時間テーブル受信時処理
-    socketio.on("getRes_date_info", function(tableData) {
+
+    // 勤怠データテーブル設定
+    $scope.workTblSet = function(tableData) {
 
         if (tableData != undefined) {
             // ロックされている場合、送信ボタン無効
@@ -463,17 +520,52 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
             }
             // 合計時間計算
             $scope.calcSumWkTim();
-            // 外部イベントで$scopeを変更しても反映されないため、強制的に更新。
-            $scope.$apply();
         }
+    }
+    // 労働時間テーブル受信時処理
+    socketio.on("getRes_date_info", function(tableData) {
+        $scope.workTblSet(tableData)
+        // 外部イベントで$scopeを変更しても反映されないため、強制的に更新。
+        $scope.$apply();
     });
 
     // ユーザリスト取得応答
     socketio.on("getRes_user_list", function(userInfoList) {
         $scope.userInfoList = userInfoList;
-        for(let obj of userInfoList) {
-            if (obj.name != "root") {
-                $scope.userList.push(obj.name);
+        for(let index in $scope.userInfoList) {
+            if ($scope.userInfoList[index].name != "root") {
+                $scope.userList.push($scope.userInfoList[index].name);
+            }
+            else {
+                // root を削除
+                $scope.userInfoList.splice(index, 1);
+            }
+        }
+        $scope.$apply();
+
+        // 全ユーザの勤怠データ取得
+        $scope.sendMsg_getAllWorkTable();
+    });
+    // 全ユーザの勤怠データ取得（表示中月）
+    socketio.on("getRes_date_info_all", function(workTblList) {
+
+        $scope.userWorkTblList = workTblList;
+
+        // 入力状態初期化
+        for (let userInfo of $scope.userInfoList) {
+            userInfo.input_state = INPUT_NOTHING;
+        }
+
+        // ユーザ数分勤怠データをチェック
+        for(let tbl of workTblList) {
+            // 勤怠データに該当するユーザ情報取得
+            let usrInf = $scope.userInfoList.filter(function(item, index){
+                if (item.name == tbl.name) return true;
+            });
+            // 該当ユーザの今月のlock情報更新
+            usrInf[0].input_state = INPUT_STATE_INCOMP;
+            if (tbl.lock == true) { 
+                usrInf[0].input_state = INPUT_STATE_COMP;
             }
         }
         $scope.$apply();

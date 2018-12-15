@@ -14,16 +14,48 @@
 <body ng-app="WorkTblApp">
 
     <div ng-controller="WorkTblCtrl">
+
+        <!-- 非印刷エリア -->
         <span class="hidden-print">
-        <input type="checkbox" class="chk_lock" checked="{{lock}}" ng-model="lock" ng-change="changeEditLock()">
-        <span class="mark_lock">🔒</span>
-        <select class="select_user" ng-model="selectedUser" ng-options="user for user in userList" ng-change="selectUser()"></select>
-        <button class="btn_shiftMonth" ng-click="shiftMonth(-1)"> < 前月 </button>
-        <button class="btn_shiftMonth" ng-click="shiftMonth(1)"> 次月 > </button>
-        <button class="btn_download" style="left: 400px" onclick="document.getElementById('download').click()">保存</button>
-        <a id="download" href="#" download="#.json" ng-click="download_workTable()" hidden></a>
+            <p>{{thisYear}}年{{thisMonth+1}}月  
+            <button class="btn_shiftMonth" ng-click="wrap_shiftMonth(-1)"> < 前月 </button>
+            <button class="btn_shiftMonth" ng-click="wrap_shiftMonth(1)"> 次月 > </button>
+            </p>
+<!--スクロール            <div style="width:500px;height:400px;overflow:auto;"></div> -->
+            <table class="WorkTblTb" style="font-size: 12px;">
+                <!-- ヘッダ -->
+                <tr>
+                    <th width="100px">氏名</th>
+                    <th width="80px">状態</th>
+                    <th width="50px">勤怠</th>
+                    <th width="50px">保存</th>
+                </tr>
+
+                <!-- データ -->
+                <tr ng-repeat="(index, user) in userInfoList">
+                    <td>{{user.name}}</td>
+                    <td><select 
+                        ng-model="user.input_state" ng-options="state for state in input_state_list" ng-change="changeEditLock(index)">
+                    </select></td>
+                    <td><button class="btnSetDef" ng-click="click_btn_Show(index)">表示</button></td>
+                    <td><button class="btnSetDef" ng-click="click_btn_Save(index)">保存</button></td>
+                    
+                </tr>
+            </table>
+<!--            </div>-->
+
+<!-- 勤怠ロック、ユーザ選択　設定方法変更のため削除
+            <input type="checkbox" class="chk_lock" checked="{{lock}}" ng-model="lock" ng-change="changeEditLock()">
+            <span class="mark_lock">🔒</span>
+            <select class="select_user" ng-model="selectedUser" ng-options="user for user in userList" ng-change="selectUser()"></select>
+
+            <button class="btn_download" style="left: 400px" onclick="document.getElementById('download').click()">保存</button>
+            <a id="download" href="#" download="#.json" ng-click="download_workTable()" hidden></a>
+-->
         </span>
 
+        <!--スクロール        <div style="width:900px;height:400px;overflow:auto;"> -->
+        <!-- 印刷エリア -->
         <span class="content-print">
         <table>
         <tr>
@@ -90,7 +122,8 @@
         </tr>
         </table>
         </span>
-    </div>
+        </div>
+<!--    </div>-->
     
 </body>
 </html>
