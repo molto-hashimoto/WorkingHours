@@ -27,7 +27,7 @@ io.sockets.on("connection", function (socket) {
       'year': dateInfo['year'], 
       'month': dateInfo['month']
     }
-    getMongoObj().collection('workTable').find(query).toArray(function(error, documents) {
+    getMongoObj().collection('workTable_2').find(query).toArray(function(error, documents) {
       assert.equal(error, null);
       console.log(documents);
       if (documents.length != 0) {
@@ -43,7 +43,7 @@ io.sockets.on("connection", function (socket) {
       'year': dateInfo['year'], 
       'month': dateInfo['month']
     }
-    getMongoObj().collection('workTable').find(query).toArray(function(error, documents) {
+    getMongoObj().collection('workTable_2').find(query).toArray(function(error, documents) {
       assert.equal(error, null);
       console.log(documents);
       // 該当勤怠データなしの場合も送信する
@@ -65,7 +65,7 @@ io.sockets.on("connection", function (socket) {
         'year': workTableData['year'], 
         'month': workTableData['month']
       }
-      getMongoObj().collection('workTable').updateOne(query, {$set : workTableData}, { upsert: true }, function(err, result) {
+      getMongoObj().collection('workTable_2').updateOne(query, {$set : workTableData}, { upsert: true }, function(err, result) {
         assert.equal(err, null);
         assert.equal(1, result.result.n);
         console.log('update document');
@@ -106,7 +106,7 @@ io.sockets.on("connection", function (socket) {
       $or:[{'year': selectYear1, 'month': {$gte: 10}},{'year': selectYear2, 'month': {$lte: 10}}]
     }
 
-    getMongoObj().collection('workTable').find(query).toArray(function(error, documents) {
+    getMongoObj().collection('workTable_2').find(query).toArray(function(error, documents) {
       assert.equal(error, null);
       let sumPaidVacation = 0;
       let target;

@@ -154,11 +154,14 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
         let lastday = new Date($scope.thisYear, $scope.thisMonth, 0);
         lastday = lastday.getDate();
 
+        // 今月1～月末
+        $scope.setWorkTable($scope.thisYear, $scope.thisMonth, 1, lastday);
+/*
         // 16~月末
         $scope.setWorkTable($scope.thisYear, $scope.thisMonth-1, 16, lastday);
         // 1~15
         $scope.setWorkTable($scope.thisYear, $scope.thisMonth, 1, 15);
-
+*/
         // サーバに年月を通知
         socketio.emit("getReq_date_info", {"name" : $scope.staff_name,
                                     "year" : $scope.thisYear, 
@@ -583,7 +586,9 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
         });
     }
 
+    // 最初に実行される処理
     $scope.req_judgeHoliday().then(function(value){
+        // 祝日判定用APIのrequireが完了した後の処理
         judgeHoliday = value;
         $scope.post_user();
     }).catch(function(err){
