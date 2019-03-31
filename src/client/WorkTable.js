@@ -153,7 +153,7 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
     // 労働時間テーブル生成
     $scope.createWorkTable = function(){
         //月末を取得 (次月の0日)
-        let lastday = new Date($scope.thisYear, $scope.thisMonth, 0);
+        let lastday = new Date($scope.thisYear, $scope.thisMonth+1, 0);
         lastday = lastday.getDate();
 
         // 今月1～月末
