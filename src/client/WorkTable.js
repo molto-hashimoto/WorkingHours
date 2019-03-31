@@ -46,10 +46,12 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
     $scope.thisYear = today.getFullYear();
     $scope.thisMonth = today.getMonth();  // 0-11 処理上はそのまま使うが、サーバに送信する際は+1する
 
+/* [20190331] 1～末日締めに変更のため削除 
     // 16日以降は次月を表示
     if (today.getDate() > 15) {
         $scope.thisMonth+=1;
     }
+*/
     // 前月、次月ボタンで月が変わるため、ページ表示時の日付を覚えておく
     $scope.orgThisYear = $scope.thisYear;
     $scope.orgThisMonth = $scope.thisMonth;
@@ -156,7 +158,8 @@ WorkTblApp.controller('WorkTblCtrl', ['$scope', function ($scope) {
 
         // 今月1～月末
         $scope.setWorkTable($scope.thisYear, $scope.thisMonth, 1, lastday);
-/*
+        
+/* [20190331] 1～末日締めに変更
         // 16~月末
         $scope.setWorkTable($scope.thisYear, $scope.thisMonth-1, 16, lastday);
         // 1~15
